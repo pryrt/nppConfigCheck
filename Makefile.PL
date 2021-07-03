@@ -3,10 +3,10 @@ use 5.010;
 # See lib/ExtUtils/MakeMaker.pm for details of how to influence
 # the contents of the Makefile that is written.
 %mm_args = (
-    'NAME'          => 'Win32::Mechanize::NotepadPlusPlus',
+    'NAME'          => 'nppConfigCheck',
     'AUTHOR'        => 'Peter C. jones <petercj AT cpan.org>',
-    'VERSION_FROM'  => 'lib/Win32/Mechanize/NotepadPlusPlus.pm',
-    'ABSTRACT_FROM' => 'lib/Win32/Mechanize/NotepadPlusPlus.pm',
+    'VERSION_FROM'  => 'src/nppConfigCheck.pl',
+    'ABSTRACT_FROM' => 'src/nppConfigCheck.pl',
     'PREREQ_PM'     => {
         'Exporter'          => 5.57,    # needed for `use Exporter qw(import);` notation
         'version'           => 0.77,
@@ -35,12 +35,11 @@ use 5.010;
             },
             resources => {
                 bugtracker => {
-                    mailto  => 'bug-Win32-Mechanize-NotepadPlusPlus@rt.cpan.org',
-                    web     => 'https://github.com/pryrt/Win32-Mechanize-NotepadPlusPlus/issues',
+                    web     => 'https://github.com/pryrt/nppConfigCheck/issues',
                 },
                 repository => {
-                    url     => 'https://github.com/pryrt/Win32-Mechanize-NotepadPlusPlus.git',
-                    web     => 'https://github.com/pryrt/Win32-Mechanize-NotepadPlusPlus',
+                    url     => 'https://github.com/pryrt/nppConfigCheck.git',
+                    web     => 'https://github.com/pryrt/nppConfigCheck',
                     type    => 'git',
                 },
             },
