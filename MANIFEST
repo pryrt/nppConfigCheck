@@ -1,5 +1,7 @@
+bin/nppConfigCheck.exe
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
 README.md
+src/compile.pl
 src/nppConfigCheck.pl
