@@ -3,7 +3,7 @@
 use 5.012;  # strict, say
 use warnings;
 
-our $VERSION = '0.007';  # rrr.mmmsss : rrr is major revision; mmm is minor revision; sss is sub-revision (new feature path or bugfix); optionally use _sss instead, for alpha sub-releases
+our $VERSION = '0.001';
 
 
 print "Hello World";

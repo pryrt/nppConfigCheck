@@ -15,14 +15,19 @@ use 5.010;
         'constant'          => 0,
         'Carp'              => 0,
         'Encode'            => 0,
-        'IPC::Open2'        => 0,
-        'Win32::GuiTest'    => 1.64,    # version needed for 64-bit ::SendMessage retval
-        'Win32::API'        => 0.71,    # version needed for WINAPI calling convention
-        'Win32::GUI'        => 0,       # for now, needed for notepad()->prompt; need to look for alternative
-        'Win32'             => 0,
-        'File::Which'       => 0,
-        'Config'            => 0,       # needed in Notepad.pm::getFiles for $Config{ptrsize}
+        #'IPC::Open2'        => 0,
+        #'Win32::GuiTest'    => 1.64,    # version needed for 64-bit ::SendMessage retval
+        #'Win32::API'        => 0.71,    # version needed for WINAPI calling convention
+        #'Win32::GUI'        => 0,       # for now, needed for notepad()->prompt; need to look for alternative
+        #'Win32'             => 0,
+        #'File::Which'       => 0,
+        #'Config'            => 0,       # needed in Notepad.pm::getFiles for $Config{ptrsize}
     },
+
+    'PL_FILES'      => {
+        'src/compile.pl' => { 'bin/nppConfigCheck.exe' => 'src/nppConfigCheck.pl' },
+    },
+
 );
 
 {
@@ -43,24 +48,16 @@ use 5.010;
                     type    => 'git',
                 },
             },
-            keywords => [ 'Notepad++', 'automation'],
+            keywords => [ 'Notepad++' ],
         };
         # automatically determine the versions for 'provides'; MM->parse_version exists as of MM v6.31, so not a problem with >= 6.46
         #   => this comes out right when printed... but MYMETA.* shows values that look wrong
         my $v = MM->parse_version( $mm_args{VERSION_FROM} );
         $mm_args{META_MERGE}{provides} = {
-            'Win32::Mechanize::NotepadPlusPlus' => {
-                file => 'lib/Win32/Mechanize/NotepadPlusPlus.pm',
+            'nppConfigCheck' => {
+                file => 'src/nppConfigCheck.pm',
                 version => $v,
             },
-            'Win32::Mechanize::NotepadPlusPlus::Notepad' => {
-                file => 'lib/Win32/Mechanize/NotepadPlusPlus/Notepad.pm',
-                version => $v,
-            },
-            'Win32::Mechanize::NotepadPlusPlus::Editor' => {
-                file => 'lib/Win32/Mechanize/NotepadPlusPlus/Editor.pm',
-                version => $v,
-            }
         };
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.31' ) {
@@ -75,7 +72,7 @@ use 5.010;
             'warnings' => 0,
             'strict' => 0,
             'Test::More' => 0.86,
-			'Test::Exception' => 0,
+            'Test::Exception' => 0,
             'constant' => 0,
             'Config' => 0,
             'Win32' => 0,
@@ -87,13 +84,13 @@ use 5.010;
             'warnings' => 0,
             'strict' => 0,
             'Test::More' => 0.86,
-			'Test::Exception' => 0,
+            'Test::Exception' => 0,
             'constant' => 0,
             'Config' => 0,
             'Path::Tiny' => 0.058,          # 0.018 needed for rootdir and cwd; 0.058 needed for sibling
-            'Win32' => 0,
-            'Win32::API' => 0,
-            'Win32::GuiTest'    => 1.64,    # version needed for 64-bit ::SendMessage retval
+            #'Win32' => 0,
+            #'Win32::API' => 0,
+            #'Win32::GuiTest'    => 1.64,    # version needed for 64-bit ::SendMessage retval
             'Encode' => 0,
             'FindBin' => 1.49,              # the version released with perl v5.10
         };
@@ -153,38 +150,6 @@ LICENSE :: src/nppConfigCheck.pl Makefile.PL
 	$(RM_F) LICENSE.pod
 
 docs :: README.md LICENSE manifest
-
-# auto-generate the messages-modules for Notepad++ GUI and Scintilla Editor -- this is run by developer, not during the install suite
-
-all_msgs ::
-	$(TOUCH) src/*.h
-	$(MAKE) msgs
-
-msgs :: generate__npp_msgs generate__npp_idm generate__sci_msgs
-
-generate__npp_msgs :: src/__npp_msgs.pm
-
-generate__npp_idm :: src/__npp_idm.pm
-
-generate__sci_msgs :: src/__sci_msgs.pm
-
-# change in direction: I used to directly generate the __sci_msgs.pm and similar; now I'll generate an intermediary in the src directory, but manually incorporate those changes into the real library
-src/__npp_msgs.pm :: src/Notepad_plus_msgs.h
-	$(NOECHO) $(ECHO) # svn export --force https://github.com/notepad-plus-plus/notepad-plus-plus/trunk/PowerEditor/src/MISC/PluginsManager/Notepad_plus_msgs.h
-	$(NOECHO) $(ABSPERLRUN) src/convertHeaders.pl "$<" "$@" "Win32::Mechanize::NotepadPlusPlus::Notepad::Messages" "nppm_dummyhash"
-
-src/__npp_idm.pm :: src/menuCmdID.h
-	$(NOECHO) $(ECHO) # svn export --force https://github.com/notepad-plus-plus/notepad-plus-plus/trunk/PowerEditor/src/menuCmdID.h
-	$(NOECHO) $(ABSPERLRUN) src/convertHeaders.pl "$<" "$@" "Win32::Mechanize::NotepadPlusPlus::__npp_idm" "nppidm_dummyhash"
-
-src/__sci_msgs.pm :: src/Scintilla.h
-	$(NOECHO) $(ECHO) # svn export --force https://github.com/notepad-plus-plus/notepad-plus-plus/trunk/scintilla/include/Scintilla.h
-	$(NOECHO) $(ABSPERLRUN) src/convertHeaders.pl "$<" "$@" "Win32::Mechanize::NotepadPlusPlus::Editor::Messages" "scimsg_dummyhash"
-
-src_export ::
-	$(NOECHO) svn export --force https://github.com/notepad-plus-plus/notepad-plus-plus/trunk/PowerEditor/src/MISC/PluginsManager/Notepad_plus_msgs.h src/
-	$(NOECHO) svn export --force https://github.com/notepad-plus-plus/notepad-plus-plus/trunk/PowerEditor/src/menuCmdID.h src/
-	$(NOECHO) svn export --force https://github.com/notepad-plus-plus/notepad-plus-plus/trunk/scintilla/include/Scintilla.h src/
 
 POSTAMBLE
 
