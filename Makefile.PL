@@ -103,17 +103,6 @@ use 5.010;
     }
 }
 
-use FindBin;
-use lib $FindBin::Bin . '/helpbuild';
-use myMakeHelper;
-my %helper = myMakeHelper();
-use Data::Dumper; print Dumper \%helper;
-if(exists $helper{npp_folder} and exists $helper{zip}) {
-    warn "creating include-file for updating PATH=$helper{npp_folder};%PATH%";
-    open my $inc, '>', "${FindBin::Bin}/t/nppPath.inc";
-    print {$inc} "BEGIN { \$ENV{PATH} = '$helper{npp_folder};' . \$ENV{PATH} };\n\n1;\n";
-}
-
 sub MY::postamble {
     my (undef,%h) = @_;
     #require Data::Dumper;
@@ -140,32 +129,30 @@ realclean ::
 	$(NOECHO) ( $(TEST_F) LICENSE.pod && $(RM_RF) LICENSE.pod ) || $(ECHO) realclean:: didn't find LICENSE.pod intermediary
 	$(NOECHO) ( $(TEST_F) README.pod && $(RM_RF) README.pod ) || $(ECHO) realclean:: didn't find README.pod intermediary
 	$(NOECHO) ( $(TEST_F) MYMETA.json.lock && $(RM_RF) MYMETA.json.lock ) || $(ECHO) realclean:: didn't find MYMETA.json.lock temp file
-	$(NOECHO) ( $(TEST_D) %TEMP%\notepad++ && $(RM_RF) %TEMP%\notepad++ ) || $(ECHO) realclean:: didn't find temp\notepad++ to clean
-	$(NOECHO) ( $(TEST_F) t\nppPath.inc && $(RM_RF) t\nppPath.inc ) || $(ECHO) realclean:: didn't find t\nppPath.inc to clean
 
 # veryclean: runs realclean, then deletes .bak, .old, .orig, and similar
 
-# auto-populate the VERSION in the submodules from $(VERSION), which comes from main module
-populateversion :: lib/Win32/Mechanize/NotepadPlusPlus.pm
-	$(NOECHO) $(ECHO) want to auto-populate VERSION in all sub-modules: $(VERSION)
-	$(PERL) -pi -e "s/^(\s*our\s+.VERSION\s*=).*?;.*?$$/\1 '$(VERSION)'; # auto-populated from W::M::NPP/" lib/Win32/Mechanize/NotepadPlusPlus/Notepad.pm lib/Win32/Mechanize/NotepadPlusPlus/Editor.pm
+# # auto-populate the VERSION in the submodules from $(VERSION), which comes from main module
+# populateversion :: src/nppConfigCheck.pm
+# 	$(NOECHO) $(ECHO) want to auto-populate VERSION in all sub-modules: $(VERSION)
+# 	$(PERL) -pi -e "s/^(\s*our\s+.VERSION\s*=).*?;.*?$$/\1 '$(VERSION)'; # auto-populated from W::M::NPP/" lib/Win32/Mechanize/NotepadPlusPlus/Notepad.pm lib/Win32/Mechanize/NotepadPlusPlus/Editor.pm
 
 #config :: populateversion
 #	$(NOECHO) $(NOOP)
 
 # auto-generate the README from the lib/Win32/Mechanize/NotepadPlusPlus.pm
-README.md :: lib/Win32/Mechanize/NotepadPlusPlus.pm Makefile.PL
-	$(PERL) -MPod::Simple::Select -e 'my $$p = Pod::Simple::Select->new();$$p->output_file(qq(README.pod));$$p->select({head1 => [qq(NAME),qq(SYNOPSIS),qq(DESCRIPTION),qq(LIMITATIONS),qq(INSTALLATION),qq(TODO),qq(AUTHOR),qq(COPYRIGHT),qq(LICENSE)]});$$p->parse_file(qq(lib/Win32/Mechanize/NotepadPlusPlus.pm));'
+README.md :: src/nppConfigCheck.pl Makefile.PL
+	$(PERL) -MPod::Simple::Select -e 'my $$p = Pod::Simple::Select->new();$$p->output_file(qq(README.pod));$$p->select({head1 => [qq(NAME),qq(USAGE),qq(DESCRIPTION),qq(LIMITATIONS),qq(INSTALLATION),qq(TODO),qq(AUTHOR),qq(COPYRIGHT),qq(LICENSE)]});$$p->parse_file(qq(src/nppConfigCheck.pl));'
 	pod2markdown README.pod README.md
 	$(RM_F) README.pod
 
 # auto-generate the LICENSE file from the lib/Win32/Mechanize/NotepadPlusPlus.pm
-LICENSE :: lib/Win32/Mechanize/NotepadPlusPlus.pm Makefile.PL
-	$(PERL) -MPod::Simple::Select -e 'my $$p = Pod::Simple::Select->new();$$p->output_file(qq(LICENSE.pod));$$p->select({head1 => [qw/AUTHOR COPYRIGHT LICENSE/]});$$p->parse_file(qq(lib/Win32/Mechanize/NotepadPlusPlus.pm));'
+LICENSE :: src/nppConfigCheck.pl Makefile.PL
+	$(PERL) -MPod::Simple::Select -e 'my $$p = Pod::Simple::Select->new();$$p->output_file(qq(LICENSE.pod));$$p->select({head1 => [qw/AUTHOR COPYRIGHT LICENSE/]});$$p->parse_file(qq(src/nppConfigCheck.pl));'
 	pod2text LICENSE.pod LICENSE
 	$(RM_F) LICENSE.pod
 
-docs :: README.md LICENSE manifest populateversion
+docs :: README.md LICENSE manifest
 
 # auto-generate the messages-modules for Notepad++ GUI and Scintilla Editor -- this is run by developer, not during the install suite
 
