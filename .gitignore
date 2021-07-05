@@ -1,2 +1,7 @@
 # ignore the ./bin/ directory
 /bin/
+/blib/
+pm_to_blib
+*.bak
+MYMETA.*
+^Makefile$

@@ -2,11 +2,22 @@
 
 use 5.012;  # strict, say
 use warnings;
+use Getopt::Long;
+use Pod::Usage;
+
+use FindBin;
+use lib "$FindBin::Bin/lib";
+use NppCC;
 
 our $VERSION = '0.001';
 
+my %arg = (
+    path => findNppDir(),
+);
+
 
 print "Hello World";
+print "nppPath = ", $arg{path} // '<undef>';
 
 =pod
 
@@ -74,6 +85,10 @@ thru the repository's interface at L<https://github.com/pryrt/nppConfigCheck/iss
 
 <a href="https://github.com/pryrt/nppConfigCheck/releases"><img src="https://img.shields.io/github/release/pryrt/nppConfigCheck.svg" alt="" title="github release"></a>
 
+=end html
+
+=begin comment
+
 <!--
 <a href="https://metacpan.org/pod/Win32::Mechanize::NotepadPlusPlus"><img src="https://img.shields.io/cpan/v/Win32-Mechanize-NotepadPlusPlus.svg?colorB=00CC00" alt="" title="metacpan"></a>
 <a href="http://matrix.cpantesters.org/?dist=Win32-Mechanize-NotepadPlusPlus"><img src="http://cpants.cpanauthors.org/dist/Win32-Mechanize-NotepadPlusPlus.png" alt="" title="cpan testers"></a>
@@ -81,7 +96,7 @@ thru the repository's interface at L<https://github.com/pryrt/nppConfigCheck/iss
 <a href="https://ci.appveyor.com/project/pryrt/win32-mechanize-notepadplusplus"><img src="https://ci.appveyor.com/api/projects/status/6gv0lnwj1t6yaykp/branch/master?svg=true" alt="" title="test coverage"></a>
 -->
 
-=end html
+=end comment
 
 =head1 COPYRIGHT
 
