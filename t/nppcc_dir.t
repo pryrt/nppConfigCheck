@@ -4,7 +4,8 @@ package testsuite;
 use 5.012;  # strict, say, state
 use warnings;
 use Test::More;
-use File::Spec::Functions qw/catpath splitpath catdir splitdir/;
+use Test::Exception;
+use File::Spec::Functions qw/catpath splitpath catdir splitdir updir/;
 
 use FindBin;
 use lib "$FindBin::Bin/../src/lib";
@@ -22,27 +23,29 @@ sub cleanpath {
     my $out = catpath( $v, catdir(splitdir($p)), '');
 }
 
-my $batchPath = cleanpath("$FindBin::Bin/bin/") or die "error cleaning batchPath";
-diag 'batchPath => ', $batchPath // '<undef>';
+my $exePath = cleanpath("$FindBin::Bin/bin/Notepad++/") or die "error cleaning exePath";
+ok defined $exePath, 'exePath = ' . $exePath // '<undef>';
+my $progFiles = cleanpath("$FindBin::Bin/bin/") or die "error cleaning progFiles";
+ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
 
 # only %PATH% is set
 {
-    local $ENV{PATH} = $batchPath;
+    local $ENV{PATH} = $exePath;
     local $ENV{ProgramW6432} = 'ProgramW6432';
     local $ENV{ProgramFiles} = 'ProgramFiles';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
     my $get = findNppDir();
-    is $get, $batchPath, 'findNppDir => PATH: ' . $batchPath;
+    is $get, $exePath, 'findNppDir => PATH: ' . $exePath;
 }
 
 # only %ProgramW6432% is set
 {
     local $ENV{PATH} = 'PATH';
-    local $ENV{ProgramW6432} = $batchPath;
+    local $ENV{ProgramW6432} = $progFiles;
     local $ENV{ProgramFiles} = 'ProgramFiles';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
     my $get = findNppDir();
-    is $get, $batchPath, 'findNppDir => ProgramW6432: ' . $batchPath;
+    is $get, $exePath, 'findNppDir => ProgramW6432: ' . $exePath;
 }
 
 # only %ProgramFiles% is set
@@ -50,10 +53,10 @@ diag 'batchPath => ', $batchPath // '<undef>';
     local %ENV;
     local $ENV{PATH} = 'PATH';
     local $ENV{ProgramW6432} = 'ProgramW6432';
-    local $ENV{ProgramFiles} = $batchPath;
+    local $ENV{ProgramFiles} = $progFiles;
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
     my $get = findNppDir();
-    is $get, $batchPath, 'findNppDir => ProgramFiles: ' . $batchPath;
+    is $get, $exePath, 'findNppDir => ProgramFiles: ' . $exePath;
 }
 
 # only %ProgramFiles(x86)% is set
@@ -62,9 +65,9 @@ diag 'batchPath => ', $batchPath // '<undef>';
     local $ENV{PATH} = 'PATH';
     local $ENV{ProgramW6432} = 'ProgramW6432';
     local $ENV{ProgramFiles} = 'ProgramFiles';
-    local $ENV{'ProgramFiles(x86)'} = $batchPath;
+    local $ENV{'ProgramFiles(x86)'} = $progFiles;
     my $get = findNppDir();
-    is $get, $batchPath, 'findNppDir => ProgramFiles: ' . $batchPath;
+    is $get, $exePath, 'findNppDir => ProgramFiles(x86): ' . $exePath;
 }
 
 #use Data::Dumper;  ++$Data::Dumper::Sortkeys;

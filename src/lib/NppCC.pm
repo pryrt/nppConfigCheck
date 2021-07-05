@@ -16,14 +16,11 @@ our %EXPORT_TAGS = (
     all     => [@EXPORT_OK],
 );
 
-sub _hidden { 1; }
 sub findNppDir {
-    state $npp_path;
+    my $npp_path;
     #return $npp_path if defined $npp_path;
 
     # priority to path, 64bit, default, then x86-specific locations
-print STDERR "\n\n=====\n";
-printf STDERR "ENV{%s} = %s\n", $_, $ENV{$_} for qw/PATH ProgramW6432 ProgramFiles ProgramFiles(x86)/;
     my @try = ( which('notepad++') );
     push @try, "$ENV{ProgramW6432}/Notepad++/notepad++.exe" if exists $ENV{ProgramW6432};
     push @try, "$ENV{ProgramFiles}/Notepad++/notepad++.exe" if exists $ENV{ProgramFiles};
@@ -38,8 +35,6 @@ printf STDERR "ENV{%s} = %s\n", $_, $ENV{$_} for qw/PATH ProgramW6432 ProgramFil
     # remove the executable and just return the directory
     my ($v,$p,$f) = splitpath($npp_path);
     $npp_path = catpath( $v, catdir(splitdir($p)), '' );    # use cat(split) to fix mismatched slashes
-print STDERR "retval = ", $npp_path//'<undef>', "\n\n";
-
 
     return $npp_path;
 }
