@@ -9,13 +9,7 @@ use File::Spec::Functions qw/catpath splitpath catdir splitdir updir/;
 
 use FindBin;
 use lib "$FindBin::Bin/../src/lib";
-
-# verify module under test loads and will import function under test
-use_ok 'NppCC', 'findNppDir';
-
-# verify function under test exists in both namespaces
-can_ok 'NppCC', 'findNppDir';
-can_ok 'testsuite', 'findNppDir';
+use NppCC qw/findNppDir/;
 
 sub cleanpath {
     my $in = shift;
@@ -78,7 +72,25 @@ ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
     like $ran, qr/^running:.*\Qnotepad++ ProgramFiles(x86)\E$/ms, 'verify PATH-based notepad++.exe ran';
 }
 
-#use Data::Dumper;  ++$Data::Dumper::Sortkeys;
-#diag Dumper \%:: ;
+# none are set, so no path found; verify undef and proper warning
+{
+    local %ENV;
+    local $ENV{PATH} = 'PATH';
+    local $ENV{ProgramW6432} = 'ProgramW6432';
+    local $ENV{ProgramFiles} = 'ProgramFiles';
+    local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
+
+    {
+        no warnings 'NppCC';
+        my $get = findNppDir();
+        is $get, undef, 'findNppDir => check for not found';
+    }
+
+    {
+        use warnings FATAL => 'NppCC';
+        throws_ok { findNppDir() } qr/\Qcould not find an instance of Notepad++; please add it to your path\E/, 'warns on no executable found';
+    }
+
+}
 
 done_testing;

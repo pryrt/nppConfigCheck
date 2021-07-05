@@ -4,6 +4,7 @@ package NppCC;
 
 use 5.012;  # strict, say, state
 use warnings;
+use warnings::register;
 use File::Which 'which';
 use File::Spec::Functions qw/catpath splitpath catdir splitdir/;
 
@@ -30,7 +31,10 @@ sub findNppDir {
         $npp_path = $try if -x $try;
         last if defined $npp_path;
     }
-    warn "could not find an instance of Notepad++; please add it to your path\n" and return undef unless defined $npp_path;
+    unless(defined $npp_path) {
+        warnings::warnif "could not find an instance of Notepad++; please add it to your path\n";
+        return undef;
+    }
 
     # remove the executable and just return the directory
     my ($v,$p,$f) = splitpath($npp_path);
