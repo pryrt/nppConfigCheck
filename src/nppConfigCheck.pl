@@ -7,7 +7,7 @@ use Pod::Usage;
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
-use NppCC;
+use NppCC 'findNppDir';
 
 our $VERSION = '0.001';
 

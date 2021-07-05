@@ -32,6 +32,7 @@ use 5.010;
 
     'PL_FILES'      => {
         'src/compile.pl' => { 'bin/nppConfigCheck.exe' => 'src/nppConfigCheck.pl' },
+        'src/compile.pl' => { 't/bin/Notepad++/notepad++.exe' => 't/bin/Notepad++/notepad++.c' },
     },
 
 );

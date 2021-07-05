@@ -4,9 +4,15 @@ use 5.012;  # strict, say
 use strict;
 use warnings;
 
+
 print STDERR "running `$0 @ARGV`";
 chomp(my $cwd=`echo %CD%`);
 print STDERR "cwd: $cwd";
-my @cmd = (qw(pp -x -o), @ARGV);
+my @cmd =
+    $ARGV[0] eq 'bin/nppConfigCheck.exe' ?
+    (qw(pp -x -o), @ARGV) :
+    $ARGV[0] eq 't/bin/Notepad++/notepad++.exe' ?
+    (qw(gcc -o), @ARGV) :
+    die "unknown @ARGV";
 print STDERR "becomes `@cmd`";
 system(@cmd) and die "error in `@cmd` => $? => $!";
