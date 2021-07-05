@@ -23,9 +23,9 @@ sub cleanpath {
     my $out = catpath( $v, catdir(splitdir($p)), '');
 }
 
-my $exePath = cleanpath("$FindBin::Bin/bin/Notepad++/") or die "error cleaning exePath";
+my $exePath = cleanpath("$FindBin::Bin/Notepad++/") or die "error cleaning exePath";
 ok defined $exePath, 'exePath = ' . $exePath // '<undef>';
-my $progFiles = cleanpath("$FindBin::Bin/bin/") or die "error cleaning progFiles";
+my $progFiles = cleanpath("$FindBin::Bin/") or die "error cleaning progFiles";
 ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
 
 # only %PATH% is set
@@ -36,6 +36,8 @@ ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
     my $get = findNppDir();
     is $get, $exePath, 'findNppDir => PATH: ' . $exePath;
+    (my $ran = `$exePath/notepad++ PATH BASED`) =~ s/\s*$//ms;
+    like $ran, qr/^running:.*\Qnotepad++ PATH BASED\E$/ms, 'verify PATH-based notepad++.exe ran';
 }
 
 # only %ProgramW6432% is set
@@ -46,6 +48,8 @@ ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
     my $get = findNppDir();
     is $get, $exePath, 'findNppDir => ProgramW6432: ' . $exePath;
+    (my $ran = `$exePath/notepad++ ProgramW6432`) =~ s/\s*$//ms;
+    like $ran, qr/^running:.*\Qnotepad++ ProgramW6432\E$/ms, 'verify PATH-based notepad++.exe ran';
 }
 
 # only %ProgramFiles% is set
@@ -57,6 +61,8 @@ ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
     my $get = findNppDir();
     is $get, $exePath, 'findNppDir => ProgramFiles: ' . $exePath;
+    (my $ran = `$exePath/notepad++ ProgramFiles`) =~ s/\s*$//ms;
+    like $ran, qr/^running:.*\Qnotepad++ ProgramFiles\E$/ms, 'verify PATH-based notepad++.exe ran';
 }
 
 # only %ProgramFiles(x86)% is set
@@ -68,6 +74,8 @@ ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
     local $ENV{'ProgramFiles(x86)'} = $progFiles;
     my $get = findNppDir();
     is $get, $exePath, 'findNppDir => ProgramFiles(x86): ' . $exePath;
+    (my $ran = `$exePath/notepad++ ProgramFiles(x86)`) =~ s/\s*$//ms;
+    like $ran, qr/^running:.*\Qnotepad++ ProgramFiles(x86)\E$/ms, 'verify PATH-based notepad++.exe ran';
 }
 
 #use Data::Dumper;  ++$Data::Dumper::Sortkeys;

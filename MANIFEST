@@ -1,7 +1,7 @@
-bin/nppConfigCheck.exe
+.gitignore
 LICENSE
 Makefile.PL
 MANIFEST			This list of files
 README.md
-src/compile.pl
-src/nppConfigCheck.pl
+t/Notepad++/notepad++.exe
+t/nppcc_dir.t
