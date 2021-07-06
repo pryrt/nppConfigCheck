@@ -47,4 +47,6 @@ jobs:
           ${{ ( startsWith(matrix.os, 'windows') && '(get-command cpanm).Path' ) || 'which cpanm' }}
           cpanm --version
       - name: Combined Directory Listing
-        run: ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+        run: |
+          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+          ${{ ( startsWith(matrix.os, 'windows') && '(get-command gcc).Path') || 'which gcc' }}
