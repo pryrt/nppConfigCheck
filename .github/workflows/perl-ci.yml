@@ -59,3 +59,7 @@ jobs:
           cpanm --notest --installdeps .
           # re-run Makefile.PL after dependencies met
           perl Makefile.PL
+      - name: cpanm test-only
+        run: |
+          cpanm --test-only --verbose --no-interactive .
+          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
