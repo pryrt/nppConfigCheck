@@ -86,6 +86,7 @@ use 5.010;
             'Config' => 0,
             'Win32' => 0,
             'FindBin' => 1.49, # the version released with perl v5.10
+	    'PAR::Packer' => 0, # required for the pp run during the compile phase
         };
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.64' ) {
