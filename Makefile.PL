@@ -89,6 +89,13 @@ use 5.010;
 	    'PAR::Packer' => 0, # required for the pp run during the compile phase
         };
     }
+    if( $ExtUtils::MakeMaker::VERSION >= '6.55_03' ) {
+    	$mm_args{BUILD_REQUIRES} = {
+	    'PAR::Packer' => 0, # required for the pp run during the compile phase
+	}
+    } else {
+    	$mm_args{PREREQ_PM}{'PAR::Packer'} = 0; # append it to PREREQ_PM if it's not avaiable in 
+    }
     if( $ExtUtils::MakeMaker::VERSION >= '6.64' ) {
         $mm_args{TEST_REQUIRES} = {
             'warnings' => 0,
