@@ -49,4 +49,8 @@ jobs:
       - name: Combined Directory Listing
         run: |
           ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
-          ${{ ( startsWith(matrix.os, 'windows') && '(get-command gcc).Path') || 'which gcc' }}
+      - name: Create makefile before prereqs
+        # but there might be some modules needed by configure, which makes chicken/egg problem
+        run: |
+          perl Makefile.PL
+          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
