@@ -10,7 +10,7 @@ name: PERL-CI
 on:
   # Triggers the workflow on all pushes to branches, and pull request for the main branch
   push:
-    branches: [ * ]
+    branches: 
   pull_request:
     branches: [ main ]
 
