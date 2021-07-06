@@ -76,7 +76,16 @@ jobs:
       - name: change path
         run: echo "./bin" >> $GITHUB_PATH
       - name: echo path
+        shell: cmd
         run: |
           echo "$PATH"
           echo "$GITHUB_PATH"
-  #
+          echo PATH = %PATH%
+          echo GITHUB_PATH = %GITHUB_PATH%
+      - name: Archive artifacts for this push
+        uses: actions/upload-artifact@v2
+        with:
+          name: nppConfigCheck.exe
+          path: ./bin/nppConfigCheck.exe
+
+#
