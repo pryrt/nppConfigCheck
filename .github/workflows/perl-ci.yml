@@ -64,3 +64,19 @@ jobs:
         run: |
           cpanm --test-only --verbose --no-interactive .
           ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+      - name: Store EXE Asset
+        uses: svenstaro/upload-release-action@v2
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: ./bin/nppConfigCheck.exe
+          asset_name: nppConfigCheck.exe
+          tag: ${{ github.ref }}
+          overwrite: true
+          body: "Some release text goes here"
+      - name: change path
+        run: echo './bin' >> $GITHUB_PATH
+      - name: echo path
+        run: |
+          echo $PATH
+          echo $GITHUB_PATH
+  #
