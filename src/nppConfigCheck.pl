@@ -15,9 +15,16 @@ my %arg = (
     path => findNppDir(),
 );
 
+sub init {
+#    GetOptions(
+#    ) or do {
+        pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
+#    };
+}
 
 print "Hello World";
 print "nppPath = ", $arg{path} // '<undef>';
+init;
 
 =pod
 
