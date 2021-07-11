@@ -10,7 +10,7 @@ name: PERL-CI
 on:
   # Triggers the workflow on all pushes to branches, and pull request for the main branch
   push:
-    branches: [ * ]
+    branches: 
   pull_request:
     branches: [ main ]
 
@@ -47,4 +47,45 @@ jobs:
           ${{ ( startsWith(matrix.os, 'windows') && '(get-command cpanm).Path' ) || 'which cpanm' }}
           cpanm --version
       - name: Combined Directory Listing
-        run: ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+        run: |
+          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+      - name: Run Makefile.PL and get prereqs
+        # but there might be some modules needed by configure, which makes chicken/egg problem
+        run: |
+          # intial run of Makefile.PL to see missing dependencies
+          perl Makefile.PL
+          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+          # install those dependencies
+          # cpanm --notest PAR::Packer
+          cpanm --notest --installdeps .
+          # re-run Makefile.PL after dependencies met
+          perl Makefile.PL
+      - name: cpanm test-only
+        run: |
+          cpanm --test-only --verbose --no-interactive .
+          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+#      - name: Store EXE Asset
+#        uses: svenstaro/upload-release-action@v2
+#        with:
+#          repo_token: ${{ secrets.GITHUB_TOKEN }}
+#          file: ./bin/nppConfigCheck.exe
+#          asset_name: nppConfigCheck.exe
+#          tag: ${{ github.ref }}
+#          overwrite: true
+#          body: "Some release text goes here"
+      - name: change path
+        run: echo "./bin" >> $GITHUB_PATH
+      - name: echo path
+        shell: cmd
+        run: |
+          echo "$PATH"
+          echo "$GITHUB_PATH"
+          echo PATH = %PATH%
+          echo GITHUB_PATH = %GITHUB_PATH%
+      - name: Archive artifacts for this push
+        uses: actions/upload-artifact@v2
+        with:
+          name: nppConfigCheck.exe
+          path: ./bin/nppConfigCheck.exe
+
+#

@@ -86,7 +86,15 @@ use 5.010;
             'Config' => 0,
             'Win32' => 0,
             'FindBin' => 1.49, # the version released with perl v5.10
+	    'PAR::Packer' => 0, # required for the pp run during the compile phase
         };
+    }
+    if( $ExtUtils::MakeMaker::VERSION >= '6.55_03' ) {
+    	$mm_args{BUILD_REQUIRES} = {
+	    'PAR::Packer' => 0, # required for the pp run during the compile phase
+	}
+    } else {
+    	$mm_args{PREREQ_PM}{'PAR::Packer'} = 0; # append it to PREREQ_PM if it's not avaiable in 
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.64' ) {
         $mm_args{TEST_REQUIRES} = {
