@@ -94,7 +94,8 @@ use 5.010;
 	    'PAR::Packer' => 0, # required for the pp run during the compile phase
 	}
     } else {
-    	$mm_args{PREREQ_PM}{'PAR::Packer'} = 0; # append it to PREREQ_PM if it's not avaiable in 
+        # append BUILD_REQUIRES to PREREQ_PM if it's not avaiable in this EUMM version
+    	$mm_args{PREREQ_PM}{'PAR::Packer'} = 0; 
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.64' ) {
         $mm_args{TEST_REQUIRES} = {
@@ -110,6 +111,7 @@ use 5.010;
             #'Win32::GuiTest'    => 1.64,    # version needed for 64-bit ::SendMessage retval
             'Encode' => 0,
             'FindBin' => 1.49,              # the version released with perl v5.10
+	    'IPC::Run' => 0,
         };
     }
     if( $ExtUtils::MakeMaker::VERSION >= '6.18' ) {
