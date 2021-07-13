@@ -9,7 +9,7 @@ use Test::More;
 
 use FindBin;
 
-our $script = "$FindBin::Bin/../src/nppConfigCheck.pl"
+our $script = "$FindBin::Bin/../src/nppConfigCheck.pl";
 ok -f $script, 'script is where it should be';
 
 # this one will just try to run with various args.pl
