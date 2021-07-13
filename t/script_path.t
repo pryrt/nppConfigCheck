@@ -14,12 +14,11 @@ ok -f $script, 'script is where it should be';
 
 # this one will just try to run with various args.pl
 my $ret = run_script_with_args();
-is_deeply $ret, [
-    'could not find an instance of Notepad++; please add it to your path',
-    ' at src/nppConfigCheck.pl line 24.',
-    'hello world',
-    'nppPath = <undef>'
-], 'run()';
+is scalar(@$ret), 4, 'run(): correct number of lines returned';
+is shift(@$ret), 'could not find an instance of Notepad++; please add it to your path', 'run(): line 1 correct';
+like shift(@$ret), qr{^\h+at .*src/nppConfigCheck.pl line 24\.$}, 'run(): line 2 correct';
+is shift(@$ret), 'hello world', 'run(): line 3 correct';
+is shift(@$ret), 'nppPath = <undef>', 'run(): line 4 correct';
 
 done_testing();
 
