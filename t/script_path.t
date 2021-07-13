@@ -14,7 +14,12 @@ ok -f $script, 'script is where it should be';
 
 # this one will just try to run with various args.pl
 my $ret = run_script_with_args();
-is_deeply $ret, ['hello world','nppPath = <undef>'], 'run()';
+is_deeply $ret, [
+    'could not find an instance of Notepad++; please add it to your path',
+    ' at src/nppConfigCheck.pl line 24.',
+    'hello world',
+    'nppPath = <undef>'
+], 'run()';
 
 done_testing();
 
