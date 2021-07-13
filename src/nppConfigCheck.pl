@@ -12,19 +12,22 @@ use NppCC 'findNppDir';
 our $VERSION = '0.001';
 
 my %arg = (
-    path => findNppDir(),
+    path => undef,
 );
 
-#sub init {
-#    GetOptions(
-#    ) or do {
-#        pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
-#    };
-#}
+sub init {
+    GetOptions(
+        "path=s" => \$arg{path},
+    ) or do {
+        pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
+    };
+    $arg{path} //= findNppDir()
+}
 
 print "Hello World";
+init();
 print "nppPath = ", $arg{path} // '<undef>';
-#init;
+exit;
 
 =pod
 
