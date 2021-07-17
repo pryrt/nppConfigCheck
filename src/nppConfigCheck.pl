@@ -27,6 +27,7 @@ sub init {
 print "Hello World";
 init();
 print "nppPath = ", $arg{path} // '<undef>';
+#printf "env: %s => %s\n", $_, $ENV{$_} for qw/PATH/;
 exit;
 
 =pod
