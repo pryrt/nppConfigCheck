@@ -76,3 +76,33 @@ see [id://11135437] and replies:
   
 The main perldoc for XML::LibXML points to [Perl XML::LibXML By Example](http://grantm.github.io/perl-libxml-by-example/),
   which might be a tolerable starting point.  
+
+After some experimentation, the following snippet will parse the contextMenu, modify **Edit > Copy** to have a comment attribute,
+  and add a `<Item MenuEntryName="Edit" MenuItemName="Join Lines" comment="pryrt" />` after the **Edit > Copy**:
+
+```
+    my $contextMenu = XML::LibXML->load_xml(no_blanks => 1, location => 'C:/usr/local/apps/notepad++/contextMenu.xml');
+    #print "contextMenu:Item = $_" for $contextMenu->findnodes('//Item');
+    print "contextMenu:StyleAll = $_" for $contextMenu->findnodes('//Item[@FolderName="Style all occurrences of token"]');
+
+    print "first Copy node: ",
+    my ($firstCopy) = $contextMenu->findnodes('//Item[@MenuItemName="Copy"]');
+    $firstCopy->setAttribute( comment => "peter's comment");
+    print "edited Copy node: ", $firstCopy;
+    print "firstCopy's parent: ",
+    my $parent = $firstCopy->parentNode;
+
+    my $newElement = XML::LibXML::Element->new('Item');
+    $newElement->setAttribute(MenuEntryName=>'Edit');
+    $newElement->setAttribute(MenuItemName=>'Join Lines');
+    $newElement->setAttribute(comment => 'pryrt');
+    print 'creating element: ', $newElement, " -- not yet attached";
+    $parent->insertAfter($newElement, $firstCopy);
+    print 'found inserted node: ',
+    my ($findNewElement) = $contextMenu->findnodes('//Item[@comment="pryrt"]');
+
+    my $str = $contextMenu->toString(1);
+    $str =~ s/(^|\G)(  |\t)/    /gm;
+    print "final edited parent:\n\n-----\n$str\n=====\n\n";
+```
+(I included code to make the indentation consistently 4 spaces per tab before printing it out)
