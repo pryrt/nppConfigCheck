@@ -61,3 +61,18 @@ if(1){
 }
 ```
   
+# 2021-July-28 XML::Rules
+  
+see [id://11135437] and replies:
+  it looks like I can use `handlers => {}` in XML::Rules->new() to 
+  define my own handlers for XML Comments and XMLDecl... but as I progressed, I 
+  couldn't figure out how to add to the the current location in the data structure,
+  which is what I was really hoping for; using the same retval as the example rules
+  did _not_ work.
+  
+  [haukex] says that for roundtripping, I am better off using XML::LibXML . :-(
+  
+# 2021-July-28 XML::LibXML
+  
+The main perldoc for XML::LibXML points to [Perl XML::LibXML By Example](http://grantm.github.io/perl-libxml-by-example/),
+  which might be a tolerable starting point.  
