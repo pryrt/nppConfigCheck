@@ -106,3 +106,40 @@ After some experimentation, the following snippet will parse the contextMenu, mo
     print "final edited parent:\n\n-----\n$str\n=====\n\n";
 ```
 (I included code to make the indentation consistently 4 spaces per tab before printing it out)
+
+# 2021-July-30 : XML structure
+  
+Take a brief look at the XML structure, to see what kinds of Nodes and attributes I will need to be comparing...
+  
+```
+langs(.model).xml
+    Languages > Language{name}
+    Languages > Language > Keywords{name} (value)
+stylers(.model).xml and themes\*.xml
+    LexerStyles > LexerType{name}
+    LexerStyles > LexerType > WordsStyle (optional value)
+shortcuts.xml
+    InternalCommands > Shortcut
+    Macros > Macro{name} > Action{name}
+    UserDefinedCommands > Command{name}
+    PluginCommands > PluginCommand
+    ScintillaKeys > ScintKey > opt:NextKey
+contextMenu.xml
+    SctintillaContextMenu > Item{id|MenuItemName|PluginCommandItemName}
+config.xml
+    FindHistory > *
+    FileBrowser > File
+    ProjectPanels > ProjectPanel{id}
+    GUIConfigs > GUIConfig{name}
+    GUIConfigs > GUIConfig{DockingManager} > *
+autoCompletion\*.xml
+    AutoComplete > Environment
+    AutoComplete > Keyword{name}
+    AutoComplete > Keyword{name} > Overload > Param{name}
+localization\*.xml & nativeLang.xml
+    NativeLangue > * > *{m/id|name/i}
+functionList\overrideMap.xml
+    functionList > associationMap > association{LangID|userDefinedLangName}
+functionList\*.xml
+    functionList > parser > *
+```
