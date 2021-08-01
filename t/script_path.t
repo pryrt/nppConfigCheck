@@ -35,8 +35,6 @@ ok -f $script, 'script is where it should be';
     like $_, qr/\Quse NppCC/, 'run_script_with_args can read nppConfigCheck.pl cotents: valid match' for @$retval;
 }
 
-done_testing; exit; # delete line
-
 # this one will just try to run with various args.pl
 {
     # I know I've fully tested findNppDir() in nppcc_dir.t, but I need to override these to make sure I get the right script output
@@ -72,7 +70,11 @@ sub run_script_with_args
     unshift @cmd, $^X;
     my ($outstr, $errstr);
     diag "run(", join(', ', map qq("$_"), @cmd), ") into strings";
-    run \@cmd, \undef, \$outstr, \$errstr;
+    eval {
+        run \@cmd, \undef, \$outstr, \$errstr;
+    } or do {
+        return ["IPC::Run found error $@"];
+    };
     #print "string = ($string)\n";
     my @out = map { chomp; $_ } map {split /\n/, $_} $errstr, $outstr;
     return \@out
