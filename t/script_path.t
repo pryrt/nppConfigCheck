@@ -14,6 +14,16 @@ our $script = canonpath(catfile($FindBin::Bin, '..', 'src', 'nppConfigCheck.pl')
 diag "SCRIPT_PATH: script = ", $script;
 ok -f $script, 'script is where it should be';
 
+# verify run_script_with_args works, and that the perl executable is runnable
+{
+    my $retval = run_script_with_args( '-V:myuname');
+    diag "perl -V:myuname => ", explain $retval;
+    is scalar @$retval, 1, 'verify perl runs correctly: `perl -V:myuname` => right number of return lines';
+    like $retval->[0], qr/perl/i, 'verify perl runs correctly: `perl -V:myuname` => first line mentions perl';
+}
+
+done_testing; exit; # delete line
+
 # this one will just try to run with various args.pl
 {
     # I know I've fully tested findNppDir() in nppcc_dir.t, but I need to override these to make sure I get the right script output
@@ -24,7 +34,7 @@ ok -f $script, 'script is where it should be';
     local $ENV{ProgramFiles} = 'ProgramFiles';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
 
-    my $ret = run_script_with_args();
+    my $ret = run_script_with_args($script);
     diag "ret = ", explain $ret;
     is scalar(@$ret), 4, 'run(): correct number of lines returned' or diag explain $ret;
     is shift(@$ret), 'could not find an instance of Notepad++; please add it to your path', 'run(): line 1 correct';
@@ -46,7 +56,7 @@ done_testing();
 sub run_script_with_args
 {
     my @cmd = @_;
-    unshift @cmd, $^X, $script;
+    unshift @cmd, $^X;
     my ($outstr, $errstr);
     diag "run(", join(', ', map qq("$_"), @cmd), ") into strings";
     run \@cmd, \undef, \$outstr, \$errstr;
