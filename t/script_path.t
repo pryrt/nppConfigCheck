@@ -16,10 +16,10 @@ ok -f $script, 'script is where it should be';
 
 # verify run_script_with_args works, and that the perl executable is runnable
 {
-    my $retval = run_script_with_args( '-V:myuname');
-    diag "perl -V:myuname => ", explain $retval;
-    is scalar @$retval, 1, 'verify perl runs correctly: `perl -V:myuname` => right number of return lines';
-    like $retval->[0], qr/perl/i, 'verify perl runs correctly: `perl -V:myuname` => first line mentions perl';
+    my $retval = run_script_with_args( '-v');
+    diag "perl -v => ", explain $retval;
+    my $joined = join "\n", @$retval;
+    like $joined, qr/perl/i, 'verify perl runs correctly: `perl -v`';
 }
 
 done_testing; exit; # delete line
