@@ -22,6 +22,19 @@ ok -f $script, 'script is where it should be';
     like $joined, qr/perl/i, 'verify perl runs correctly: `perl -v`';
 }
 
+# verify run_script_with_args can properly see the script as an argument
+{
+    my $retval = run_script_with_args( '-le', 'print for @ARGV', $script );
+    diag "print for ARGV => ", explain $retval;
+    my $joined = join "\n", @$retval;
+    like $joined, qr/\QnppConfigCheck.pl\E$/, 'run_script_with_args got nppConfigCheck.pl as argument';
+
+    $retval = run_script_with_args( '-ne', 'push @a, $_; END { print grep /\bNppCC\b/, @a }', $script);
+    diag "read script file  => ", explain $retval;
+    ok scalar @$retval, 'run_script_with_args can read nppConfigCheck.pl cotents: at least one match';
+    like $_, qr/\Quse NppCC/, 'run_script_with_args can read nppConfigCheck.pl cotents: valid match' for @$retval;
+}
+
 done_testing; exit; # delete line
 
 # this one will just try to run with various args.pl
