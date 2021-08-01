@@ -73,7 +73,7 @@ sub run_script_with_args
     eval {
         run \@cmd, \undef, \$outstr, \$errstr;
     } or do {
-        return ["IPC::Run found error $@"];
+        return ["IPC::Run found error", "\$\@:'$@'", "\$!:'$!'", "\$^E:'$^E'", "\$?:'$?'"];
     };
     #print "string = ($string)\n";
     my @out = map { chomp; $_ } map {split /\n/, $_} $errstr, $outstr;
