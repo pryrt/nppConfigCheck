@@ -25,6 +25,8 @@
 #########################################
 ^RELEASE.md$
 ^t/Notepad++/
+^t/Notepad++/notepad\+\+\.exe
+notepad\+\+\.exe
 ^bin/
 ^src/
 

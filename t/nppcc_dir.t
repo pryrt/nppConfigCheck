@@ -5,7 +5,7 @@ use 5.012;  # strict, say, state
 use warnings;
 use Test::More;
 use Test::Exception;
-use File::Spec::Functions qw/catpath splitpath catdir splitdir updir/;
+use File::Spec::Functions qw/catpath splitpath catfile catdir splitdir updir/;
 
 use FindBin;
 use lib "$FindBin::Bin/../src/lib";
@@ -17,10 +17,16 @@ sub cleanpath {
     my $out = catpath( $v, catdir(splitdir($p)), '');
 }
 
-my $exePath = cleanpath("$FindBin::Bin/Notepad++/") or die "error cleaning exePath";
-ok defined $exePath, 'exePath = ' . $exePath // '<undef>';
 my $progFiles = cleanpath("$FindBin::Bin/") or die "error cleaning progFiles";
-ok defined $progFiles, 'progFiles = ' . $progFiles // '<undef>';
+ok defined $progFiles, 'defined: progFiles = ' . $progFiles // '<undef>';
+ok -d $progFiles, 'progFiles exists';
+my $exePath = cleanpath("$progFiles/Notepad++/") or die "error cleaning exePath";
+ok defined $exePath, 'defined: exePath = ' . $exePath // '<undef>';
+ok -d $exePath, 'exePath exists';
+my $exeFile = catfile($exePath, 'notepad++.exe');
+ok defined $exeFile, 'defined: exeFile = ' . $exeFile//'<undef>';
+ok -f $exeFile, 'exeFile exists';
+ok -x $exeFile, 'exeFile executable';
 
 # only %PATH% is set
 {
