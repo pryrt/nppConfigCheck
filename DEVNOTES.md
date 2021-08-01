@@ -23,7 +23,7 @@ any expectation that it will work. :-(
 # 2021-Jul-27 : XML config file parsing
 
 Quick search of perlmonks shows that XML::Twig or XML::Rules are good ideas;
-Haukex seems to like XML::Rules. 
+Haukex seems to like XML::Rules.
 ```
 looking at [haukex] [id://830550|scratchpad] with XML::Rules links
   [id://1232006] => barebones example getting it into consistent structure
@@ -60,22 +60,22 @@ if(1){
     $parser->parse_file('C:/usr/local/apps/notepad++/contextMenu.xml');
 }
 ```
-  
+
 # 2021-July-28 XML::Rules
-  
+
 see [id://11135437] and replies:
-  it looks like I can use `handlers => {}` in XML::Rules->new() to 
-  define my own handlers for XML Comments and XMLDecl... but as I progressed, I 
+  it looks like I can use `handlers => {}` in XML::Rules->new() to
+  define my own handlers for XML Comments and XMLDecl... but as I progressed, I
   couldn't figure out how to add to the the current location in the data structure,
   which is what I was really hoping for; using the same retval as the example rules
   did _not_ work.
-  
+
   [haukex] says that for roundtripping, I am better off using XML::LibXML . :-(
-  
+
 # 2021-July-28 XML::LibXML
-  
+
 The main perldoc for XML::LibXML points to [Perl XML::LibXML By Example](http://grantm.github.io/perl-libxml-by-example/),
-  which might be a tolerable starting point.  
+  which might be a tolerable starting point.
 
 After some experimentation, the following snippet will parse the contextMenu, modify **Edit > Copy** to have a comment attribute,
   and add a `<Item MenuEntryName="Edit" MenuItemName="Join Lines" comment="pryrt" />` after the **Edit > Copy**:
@@ -108,9 +108,9 @@ After some experimentation, the following snippet will parse the contextMenu, mo
 (I included code to make the indentation consistently 4 spaces per tab before printing it out)
 
 # 2021-July-30 : XML structure
-  
+
 Take a brief look at the XML structure, to see what kinds of Nodes and attributes I will need to be comparing...
-  
+
 ```
 langs(.model).xml
     Languages > Language{name}
@@ -143,3 +143,20 @@ functionList\overrideMap.xml
 functionList\*.xml
     functionList > parser > *
 ```
+
+# 2021-Aug-01 : run_script error
+
+Finally got enough debug prints to figure out what's going wrong:
+```
+# run("C:\hostedtoolcache\windows\perl\5.32.1-thr\x64\bin\perl.exe", "D:\a\nppConfigCheck\nppConfigCheck\src\nppConfigCheck.pl") into strings
+# ret = [
+#   'IPC::Run found error',
+#   '$@:\'\'',
+#   '$!:\'No such file or directory\'',
+#   '$^E:\'The system could not find the environment option that was entered\'',
+#   '$?:\'13568\''
+# ]
+```
+"no such file".  So, why is there a no-such-file error remotely?
+There isn't when I am running on my machine, and isn't when
+any of the other inline scripts are running.  What's gone wrong?
