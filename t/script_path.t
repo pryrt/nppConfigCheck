@@ -4,12 +4,14 @@ use 5.012; # strict, //
 use warnings;
 use IPC::Run qw/run/;
 use autodie;
+use File::Spec::Functions qw/canonpath catfile splitpath splitdir/;
 
 use Test::More;
 
 use FindBin;
 
-our $script = "$FindBin::Bin/../src/nppConfigCheck.pl";
+our $script = canonpath(catfile($FindBin::Bin, '..', 'src', 'nppConfigCheck.pl'));
+diag "SCRIPT_PATH: script = ", $script;
 ok -f $script, 'script is where it should be';
 
 # this one will just try to run with various args.pl
@@ -23,9 +25,18 @@ ok -f $script, 'script is where it should be';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
 
     my $ret = run_script_with_args();
+    diag "ret = ", explain $ret;
     is scalar(@$ret), 4, 'run(): correct number of lines returned' or diag explain $ret;
     is shift(@$ret), 'could not find an instance of Notepad++; please add it to your path', 'run(): line 1 correct';
-    like shift(@$ret), qr{^\h+at .*src/nppConfigCheck.pl line 24\.$}, 'run(): line 2 correct';
+    my $line2 = shift(@$ret);
+    my $regex = qr{^\h+at (.*) line 24\.$};
+    like $line2, $regex, 'run(): line 2 looks correct';
+    my($pathVal) = ($line2 =~ /$regex/); #diag "\$1 = '$1' vs \$pathVal = '$pathVal'";
+    my ($v,$p,$f) = splitpath($pathVal); #diag "splitpath => (v:$v, p:$p, f:$f)";
+    my @dirs = splitdir($p); #diag "dirs => ", explain \@dirs;
+    my $lastDir = $dirs[-2];
+    is $lastDir, 'src', 'run(): line 2: correct subdirectory';
+    is $f, 'nppConfigCheck.pl', 'run(): line 2: correct script name';
     is shift(@$ret), 'Hello World', 'run(): line 3 correct';
     is shift(@$ret), 'nppPath = <undef>', 'run(): line 4 correct';
 }
