@@ -35,6 +35,20 @@ ok -f $script, 'script is where it should be';
     like $_, qr/\Quse NppCC/, 'run_script_with_args can read nppConfigCheck.pl cotents: valid match' for @$retval;
 }
 
+# 2021-Aug-02: run simple debug script
+{
+    my $debug = canonpath(catfile($FindBin::Bin, '..', 'src', 'delme.pl'));
+    diag "SCRIPT_PATH: script = ", $debug;
+    ok -f $debug, 'script is where it should be';
+
+    my $retval = run_script_with_args($debug);
+    diag "perl -v => ", explain $retval;
+    my $joined = join "\n", @$retval;
+    like $joined, qr/hello/i, 'verify hello world';
+}
+
+done_testing; exit;
+
 # this one will just try to run with various args.pl
 {
     # I know I've fully tested findNppDir() in nppcc_dir.t, but I need to override these to make sure I get the right script output
