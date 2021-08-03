@@ -33,11 +33,12 @@ sub init {
 
     $retval or do {
         print STDERR sprintf( qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV) );
+        print STDERR "$FindBin::Bin / $FindBin::Script";
         eval{ 
-            pod2usage( {
-                -message => "message here",
-                -exitval => 2,
-            });
+            #pod2usage( {
+            #    -message => "message here",
+            #    -exitval => 2,
+            #});
             1;
         } or do {
             print STDERR "pod2usage error: '$@'\n";
