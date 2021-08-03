@@ -32,6 +32,12 @@ sub init {
     #    print STDERR "GetOptions-or-do Error: '$@'";
     #}
     #$arg{path} //= findNppDir()
+    eval { 
+        print STDERR "findNppDir => ", findNppDir(); 
+        1; 
+    } or do { 
+        print STDERR "\n\nfindNppDir error: '$@'\n\n"; 
+    };
     1;
 }
 
