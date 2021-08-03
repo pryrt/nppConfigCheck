@@ -18,15 +18,19 @@ my %arg = (
 );
 
 sub init {
+    eval {
     GetOptions(
         "path=s" => \$arg{path},
     ) or do {
         pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
-    };
+    }; 1;
+    } or do {
+        print STDERR "GetOptions-or-do Error: '$@'";
+    }
     $arg{path} //= findNppDir()
 }
 
-#init();
+init();
 print "nppPath = ", $arg{path} // '<undef>';
 #printf "env: %s => %s\n", $_, $ENV{$_} for qw/PATH/;
 exit;
