@@ -32,8 +32,12 @@ sub init {
     #}; 1;
 
     $retval or do {
-        pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
-    }
+        print STDERR sprintf( qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV) );
+        pod2usage( {
+            -message => "message here",
+            -exitval => 2,
+        });
+    };
 
     eval { 
         print STDERR "findNppDir => ", findNppDir(); 
