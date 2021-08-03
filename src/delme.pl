@@ -21,6 +21,8 @@ my %arg = (
 );
 
 sub init {
+    my $retval = 0;
+
     #eval {
     #GetOptions(
     #    "path=s" => \$arg{path},
@@ -28,10 +30,11 @@ sub init {
     #    # pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
     #    print STDERR "skip pod2usage unknown command line $0 @ARGV";
     #}; 1;
-    #} or do {
-    #    print STDERR "GetOptions-or-do Error: '$@'";
-    #}
-    #$arg{path} //= findNppDir()
+
+    $retval or do {
+        pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
+    }
+
     eval { 
         print STDERR "findNppDir => ", findNppDir(); 
         1; 
