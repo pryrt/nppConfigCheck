@@ -11,7 +11,10 @@ use NppCC 'findNppDir';
 
 our $VERSION = '0.001';
 
-BEGIN { print "Hello World"; }
+BEGIN { 
+    print "Hello World"; 
+    print "ENV{$_} => $ENV{$_}" for sort keys %ENV;
+}
 
 my %arg = (
     path => undef,
@@ -22,7 +25,8 @@ sub init {
     GetOptions(
         "path=s" => \$arg{path},
     ) or do {
-        pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
+        # pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
+        print STDERR "skip pod2usage unknown command line $0 @ARGV";
     }; 1;
     } or do {
         print STDERR "GetOptions-or-do Error: '$@'";
