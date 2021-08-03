@@ -9,6 +9,8 @@ use FindBin;
 use lib "$FindBin::Bin/lib";
 use NppCC 'findNppDir';
 
+use File::Spec::Functions qw/catfile/;
+
 our $VERSION = '0.001';
 
 BEGIN { 
@@ -33,12 +35,13 @@ sub init {
 
     $retval or do {
         print STDERR sprintf( qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV) );
-        print STDERR "$FindBin::Bin / $FindBin::Script";
+        print STDERR catfile($FindBin::Bin, $FindBin::Script), "\n";
         eval{ 
-            #pod2usage( {
-            #    -message => "message here",
-            #    -exitval => 2,
-            #});
+            pod2usage(
+                -message => "message here",
+                -exitval => 2,
+                -input => catfile( $FindBin::Bin, $FindBin::Script ),
+            );
             1;
         } or do {
             print STDERR "pod2usage error: '$@'\n";
