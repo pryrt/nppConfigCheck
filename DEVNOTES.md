@@ -160,3 +160,8 @@ Finally got enough debug prints to figure out what's going wrong:
 "no such file".  So, why is there a no-such-file error remotely?
 There isn't when I am running on my machine, and isn't when
 any of the other inline scripts are running.  What's gone wrong?
+
+# 2021-Aug-03 : run_script error
+
+it seems to be an error with pod2usage -- for some reason, with multiple layers of indirection,
+pod2usage isn't able to find a file it needs (or some environment variable gets hidden/deleted).
