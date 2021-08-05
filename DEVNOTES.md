@@ -165,3 +165,9 @@ any of the other inline scripts are running.  What's gone wrong?
 
 it seems to be an error with pod2usage -- for some reason, with multiple layers of indirection,
 pod2usage isn't able to find a file it needs (or some environment variable gets hidden/deleted).
+ 
+# 2021-Aug-05 : run_script error
+
+but when I created a dummy p2u.pl and run it in three differnt ways (IPC::Run, qx, IPC::Open3)
+  from rp2u.t, and it works just fine.  So I don't see why it's failing in the main script...
+  unless it's a folder difference.
