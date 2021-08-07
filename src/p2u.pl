@@ -12,7 +12,7 @@ BEGIN {
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
-#use NppCC 'findNppDir';
+use NppCC 'findNppDir';
 
 use File::Spec::Functions qw/catfile/;
 
@@ -23,6 +23,8 @@ sub init
         -exitval => 2,
     );
 }
+
+print STDERR "findNppDir => ", findNppDir() // '<undef>', "\n";
 
 init();
 
