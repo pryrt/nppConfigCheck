@@ -47,8 +47,6 @@ ok -f $script, 'script is where it should be';
     like $joined, qr/hello/i, 'verify hello world';
 }
 
-done_testing; exit;
-
 # this one will just try to run with various args.pl
 {
     # I know I've fully tested findNppDir() in nppcc_dir.t, but I need to override these to make sure I get the right script output
