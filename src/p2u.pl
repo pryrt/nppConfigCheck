@@ -9,10 +9,15 @@ BEGIN {
     print "ENV{$_} => $ENV{$_}\n" for sort keys %ENV;
 }
 
-pod2usage(
-    -message => "message here",
-    -exitval => 2,
-);
+sub init
+{
+    pod2usage(
+        -message => "message here",
+        -exitval => 2,
+    );
+}
+
+init();
 
 =pod
 

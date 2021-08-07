@@ -13,7 +13,7 @@ use File::Spec::Functions qw/canonpath catfile splitpath splitdir/;
 use FindBin;
 
 for my $script (
-        canonpath(catfile($FindBin::Bin, 'p2u.pl')) ,
+        canonpath(catfile($FindBin::Bin, '..', 'src', 'p2u_ok.pl')) ,
         canonpath(catfile($FindBin::Bin, '..', 'src', 'p2u.pl')) ,
     )
 {
