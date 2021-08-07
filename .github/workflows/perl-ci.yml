@@ -46,9 +46,9 @@ jobs:
           perl -v
           ${{ ( startsWith(matrix.os, 'windows') && '(get-command cpanm).Path' ) || 'which cpanm' }}
           cpanm --version
-      - name: Combined Directory Listing
-        run: |
-          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+#      - name: Combined Directory Listing
+#        run: |
+#          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
       - name: Run Makefile.PL and get prereqs
         # but there might be some modules needed by configure, which makes chicken/egg problem
         run: |
@@ -63,7 +63,7 @@ jobs:
       - name: cpanm test-only
         run: |
           cpanm --test-only --verbose --no-interactive .
-          ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
+          #${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
 #      - name: Store EXE Asset
 #        uses: svenstaro/upload-release-action@v2
 #        with:
