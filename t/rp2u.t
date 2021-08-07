@@ -13,7 +13,7 @@ use File::Spec::Functions qw/canonpath catfile splitpath splitdir/;
 use FindBin;
 
 for my $script (
-        canonpath(catfile($FindBin::Bin, '..', 'src', 'p2u_ok.pl')) ,
+        #canonpath(catfile($FindBin::Bin, '..', 'src', 'p2u_ok.pl')) ,
         canonpath(catfile($FindBin::Bin, '..', 'src', 'p2u.pl')) ,
     )
 {
@@ -37,7 +37,7 @@ done_testing;
 sub ipcrun {
     my @cmd = ($^X, @_);
     my ($outstr, $errstr) = ('','');
-    diag "ipcrun: start running command:\n";
+    diag "ipcrun(", join(', ', map qq("$_"), @cmd), ") into strings";
     eval {
         run \@cmd, \undef, \$outstr, \$errstr;
         1;

@@ -6,8 +6,8 @@ use Pod::Usage;
 
 BEGIN {
     $|++;
-    print "Hello World";
-    print "ENV{$_} => $ENV{$_}\n" for sort keys %ENV;
+    print "Hello World\n";
+    #print "ENV{$_} => $ENV{$_}\n" for sort keys %ENV;
 }
 
 use FindBin;

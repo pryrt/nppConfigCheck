@@ -35,11 +35,9 @@ ok -f $script, 'script is where it should be';
     like $_, qr/\Quse NppCC/, 'run_script_with_args can read nppConfigCheck.pl cotents: valid match' for @$retval;
 }
 
-done_testing; exit;
-
 # 2021-Aug-02: run simple debug script
 {
-    my $debug = canonpath(catfile($FindBin::Bin, '..', 'src', 'delme.pl'));
+    my $debug = canonpath(catfile($FindBin::Bin, '..', 'src', 'p2u.pl'));
     diag "SCRIPT_PATH: script = ", $debug;
     ok -f $debug, 'script is where it should be';
 
@@ -48,6 +46,8 @@ done_testing; exit;
     my $joined = join "\n", @$retval;
     like $joined, qr/hello/i, 'verify hello world';
 }
+
+done_testing; exit;
 
 # this one will just try to run with various args.pl
 {
@@ -80,18 +80,16 @@ done_testing();
 
 sub run_script_with_args
 {
-    my @cmd = @_;
-    unshift @cmd, $^X;
-    my ($outstr, $errstr);
+    my @cmd = ($^X, @_);
+    my ($outstr, $errstr) = ('','');
     diag "run(", join(', ', map qq("$_"), @cmd), ") into strings";
     eval {
         run \@cmd, \undef, \$outstr, \$errstr;
+        1;
     } or do {
         return ["IPC::Run found error", "\$\@:'$@'", "\$!:'$!'", "\$^E:'$^E'", "\$?:'$?'"];
     };
-    #print "string = ($string)\n";
-    my @out = map { chomp; $_ } map {split /\n/, $_} $errstr, $outstr;
-    return \@out
+    return [map { chomp; $_ } map {split /\n/, $_} $errstr, $outstr];
 }
 
 __END__
