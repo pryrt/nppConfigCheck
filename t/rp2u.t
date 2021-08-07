@@ -23,13 +23,13 @@ for my $script (
     ok scalar @$iret, 'ipcrun';
     diag "ipcrun => ", join "\n", '', @$iret, '';
 
-    my $qret = qxrun($script);
-    ok scalar @$qret, 'qxrun';
-    diag "qxrun => ", join "\n", '', @$qret, '';
-
-    my $o3ret = o3run($script);
-    ok scalar @$o3ret, 'o3run';
-    diag "o3run => ", join "\n", '', @$o3ret, '';
+    #my $qret = qxrun($script);
+    #ok scalar @$qret, 'qxrun';
+    #diag "qxrun => ", join "\n", '', @$qret, '';
+    #
+    #my $o3ret = o3run($script);
+    #ok scalar @$o3ret, 'o3run';
+    #diag "o3run => ", join "\n", '', @$o3ret, '';
 }
 
 done_testing;
