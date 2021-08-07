@@ -11,20 +11,26 @@ use autodie;
 
 use File::Spec::Functions qw/canonpath catfile splitpath splitdir/;
 use FindBin;
-my $script = canonpath(catfile($FindBin::Bin, 'p2u.pl'));
-diag "script = $script";
 
-my $iret = ipcrun($script);
-ok scalar @$iret, 'ipcrun';
-diag "ipcrun => ", join "\n", '', @$iret, '';
+for my $script (
+        canonpath(catfile($FindBin::Bin, 'p2u.pl')) ,
+        canonpath(catfile($FindBin::Bin, '..', 'src', 'p2u.pl')) ,
+    )
+{
+    diag "\n"x4, "-"x10, "\n", "script = $script";
 
-my $qret = qxrun($script);
-ok scalar @$qret, 'qxrun';
-diag "qxrun => ", join "\n", '', @$qret, '';
+    my $iret = ipcrun($script);
+    ok scalar @$iret, 'ipcrun';
+    diag "ipcrun => ", join "\n", '', @$iret, '';
 
-my $o3ret = o3run($script);
-ok scalar @$o3ret, 'o3run';
-diag "o3run => ", join "\n", '', @$o3ret, '';
+    my $qret = qxrun($script);
+    ok scalar @$qret, 'qxrun';
+    diag "qxrun => ", join "\n", '', @$qret, '';
+
+    my $o3ret = o3run($script);
+    ok scalar @$o3ret, 'o3run';
+    diag "o3run => ", join "\n", '', @$o3ret, '';
+}
 
 done_testing;
 

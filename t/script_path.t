@@ -35,6 +35,8 @@ ok -f $script, 'script is where it should be';
     like $_, qr/\Quse NppCC/, 'run_script_with_args can read nppConfigCheck.pl cotents: valid match' for @$retval;
 }
 
+done_testing; exit;
+
 # 2021-Aug-02: run simple debug script
 {
     my $debug = canonpath(catfile($FindBin::Bin, '..', 'src', 'delme.pl'));
@@ -46,8 +48,6 @@ ok -f $script, 'script is where it should be';
     my $joined = join "\n", @$retval;
     like $joined, qr/hello/i, 'verify hello world';
 }
-
-done_testing; exit;
 
 # this one will just try to run with various args.pl
 {
