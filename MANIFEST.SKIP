@@ -19,6 +19,8 @@
 \.old$
 \.bak$
 \.tar\.gz$
+\.github/
+\.gitignore$
 
 #########################################
 # module-specific

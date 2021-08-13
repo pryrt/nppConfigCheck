@@ -9,10 +9,10 @@ use FindBin;
 use lib "$FindBin::Bin/../src/lib";
 
 # verify module under test loads and will import function under test
-use_ok 'NppCC', 'findNppDir';
+use_ok 'NppCfgChk', 'findNppDir';
 
 # verify function under test exists in both namespaces
-can_ok 'NppCC', 'findNppDir';
+can_ok 'NppCfgChk', 'findNppDir';
 can_ok 'testsuite', 'findNppDir';
 
 done_testing;

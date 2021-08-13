@@ -8,9 +8,9 @@ use warnings::register;
 use Exporter 5.57 'import';
 
 use GetoptLong qw/GetOptionsFromArray/;
-use NppCC;  # I _think_ for this module to be found, the right path must exist for NppCC (TODO: rename to NppCfgChk)
+use NppCfgChk;  # I _think_ for this module to be found, the right path must exist for NppCfgChk
 
-our $VERSION = '0.001'; # replicated from nppConfigCheck.pl
+our $VERSION = '0.001'; # auto-populated from NppCfgChk
 
 our @EXPORT_OK = qw/%Configuration/;
 our %EXPORT_TAGS = (
@@ -45,23 +45,23 @@ sub init
     ) or return _usage('Unknown Option', \@args);
 
     # process PATH
-    $Configuration{path} //= NppCC::findNppDir();
-    NppCC::grabLocalPath($Configuration{path})
+    $Configuration{path} //= NppCfgChk::findNppDir();
+    NppCfgChk::grabLocalPath($Configuration{path})
         or return _usage('Invalid local path', \@args);
 
     # process CONFIG
-    NppCC::setConfig
+    NppCfgChk::setConfig
     $Configuration{config} eq 'appdata'
 
     # process VERSION
     if(!defined $Configuration{version}) {
-        NppCC::grabCurrentVersion()
+        NppCfgChk::grabCurrentVersion()
             or return _usage('Cannot find current version', \@args);
     } elsif ( $Configuration{version} =~ /^v/i ) {
-        NppCC::grabSpecificVersion($Configuration{version})
+        NppCfgChk::grabSpecificVersion($Configuration{version})
             or return _usage('Cannot grab specific version', \@args);
     } else {
-        NppCC::grabDirectoryVersion($Configuration{version})
+        NppCfgChk::grabDirectoryVersion($Configuration{version})
             or return _usage('Cannot find path to version', \@args);
     }
 
@@ -70,7 +70,7 @@ sub init
 1;
 __END__
 
-I am referencing dummy functions in NppCC/NppCfgChk that aren't
+I am referencing dummy functions in NppCfgChk/NppCfgChk that aren't
 yet written.
 
 The grabXXXVersion should populate the NppCfgChk data structures
@@ -85,7 +85,7 @@ not this module... because having NppCfgChk::CLI::init() actually
 run everything makes it non-atomic and harder to test again.
 Or I could call this run(), and have it do everything _including_
 the comparison and updates.  In which case, the script wouldn't
-need to `use NppCC;`, but it would instead just
+need to `use NppCfgChk;`, but it would instead just
     use NppCfgChk::CLI;
     NppCfgChk::CLI::run(@ARGV);
 

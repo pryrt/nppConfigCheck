@@ -9,7 +9,7 @@ use File::Spec::Functions qw/catpath splitpath catfile catdir splitdir updir/;
 
 use FindBin;
 use lib "$FindBin::Bin/../src/lib";
-use NppCC qw/findNppDir/;
+use NppCfgChk qw/findNppDir/;
 
 sub cleanpath {
     my $in = shift;
@@ -87,13 +87,13 @@ ok -x $exeFile, 'exeFile executable';
     local $ENV{'ProgramFiles(x86)'} = 'ProgramFiles(x86)';
 
     {
-        no warnings 'NppCC';
+        no warnings 'NppCfgChk';
         my $get = findNppDir();
         is $get, undef, 'findNppDir => check for not found';
     }
 
     {
-        use warnings FATAL => 'NppCC';
+        use warnings FATAL => 'NppCfgChk';
         throws_ok { findNppDir() } qr/\Qcould not find an instance of Notepad++; please add it to your path\E/, 'warns on no executable found';
     }
 

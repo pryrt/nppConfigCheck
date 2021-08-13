@@ -7,9 +7,9 @@ use Pod::Usage;
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
-use NppCC 'findNppDir';
+use NppCfgChk 'findNppDir';
 
-our $VERSION = '0.001';
+our $VERSION = '0.001'; # auto-populated from NppCfgChk
 
 my %arg = (
     path => undef,

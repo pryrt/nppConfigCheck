@@ -1,6 +1,6 @@
 #!perl
 
-package NppCC;
+package NppCfgChk;
 
 use 5.012;  # strict, say, state
 use warnings;
@@ -10,7 +10,7 @@ use File::Spec::Functions qw/catpath splitpath catdir splitdir/;
 
 use Exporter 5.57 'import';
 
-our $VERSION = '0.001'; # replicated from nppConfigCheck.pl
+our $VERSION = '0.001'; # master version number; scripts and other modules inherit this value
 
 our @EXPORT_OK = qw/findNppDir/;
 our %EXPORT_TAGS = (

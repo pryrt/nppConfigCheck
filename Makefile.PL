@@ -5,7 +5,7 @@ use 5.010;
 %mm_args = (
 	'NAME'          => 'nppConfigCheck',
 	'AUTHOR'        => 'Peter C. jones <petercj AT cpan.org>',
-	'VERSION_FROM'  => 'src/nppConfigCheck.pl',
+	'VERSION_FROM'  => 'src/lib/NppCfgChk.pm',
 	'ABSTRACT_FROM' => 'src/nppConfigCheck.pl',
 	'PREREQ_PM'     => {
 		'Exporter'                  => 5.57,    # needed for `use Exporter qw(import);` notation
@@ -145,10 +145,10 @@ distauthtest :: disttest
 
 # veryclean: runs realclean, then deletes .bak, .old, .orig, and similar
 
-# # auto-populate the VERSION in the submodules from $(VERSION), which comes from main module
-# populateversion :: src/nppConfigCheck.pm
-# 	$(NOECHO) $(ECHO) want to auto-populate VERSION in all sub-modules: $(VERSION)
-# 	$(PERL) -pi -e "s/^(\s*our\s+.VERSION\s*=).*?;.*?$$/\1 '$(VERSION)'; # auto-populated from W::M::NPP/" lib/Win32/Mechanize/NotepadPlusPlus/Notepad.pm lib/Win32/Mechanize/NotepadPlusPlus/Editor.pm
+# auto-populate the VERSION in the submodules from $(VERSION), which comes from main module
+populateversion :: src/lib/NppCfgChk.pm
+	$(NOECHO) $(ECHO) want to auto-populate VERSION in all sub-modules: $(VERSION)
+	$(PERL) -pi -e "s/^(\s*our\s+.VERSION\s*=).*?;.*?$$/\1 '$(VERSION)'; # auto-populated from NppCfgChk/;" src/nppConfigCheck.pl src/lib/NppCfgChk/CLI.pm
 
 #config :: populateversion
 #	$(NOECHO) $(NOOP)
@@ -165,7 +165,7 @@ LICENSE :: src/nppConfigCheck.pl Makefile.PL
 	pod2text LICENSE.pod LICENSE
 	$(RM_F) LICENSE.pod
 
-docs :: README.md LICENSE manifest
+docs :: README.md LICENSE manifest populateversion
 
 POSTAMBLE
 
