@@ -155,3 +155,8 @@ I had been hoping to use this project as a learning platform for testing scripts
   module, where I can test individual functions with full coverage, then just rely on
   my development of the script to make sure it's working right; try to keep it nearly
   all glue.
+
+After deleting all the d# and delme and script-running attempts, I realized that I
+  probably should have kept something and moved it to xt\ for doing author tests.
+  I suppose if I really want to, I could go through the git history on those commits
+  and find their source later.
