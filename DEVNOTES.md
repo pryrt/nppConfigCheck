@@ -144,30 +144,14 @@ functionList\*.xml
     functionList > parser > *
 ```
 
-# 2021-Aug-01 : run_script error
+# 2021-Aug-13 : giving up on run_script
 
-Finally got enough debug prints to figure out what's going wrong:
-```
-# run("C:\hostedtoolcache\windows\perl\5.32.1-thr\x64\bin\perl.exe", "D:\a\nppConfigCheck\nppConfigCheck\src\nppConfigCheck.pl") into strings
-# ret = [
-#   'IPC::Run found error',
-#   '$@:\'\'',
-#   '$!:\'No such file or directory\'',
-#   '$^E:\'The system could not find the environment option that was entered\'',
-#   '$?:\'13568\''
-# ]
-```
-"no such file".  So, why is there a no-such-file error remotely?
-There isn't when I am running on my machine, and isn't when
-any of the other inline scripts are running.  What's gone wrong?
+Even after all my fixes, and thinking I solved everything, as soon as I run the main 
+  script, it's come back.
 
-# 2021-Aug-03 : run_script error
-
-it seems to be an error with pod2usage -- for some reason, with multiple layers of indirection,
-pod2usage isn't able to find a file it needs (or some environment variable gets hidden/deleted).
- 
-# 2021-Aug-05 : run_script error
-
-but when I created a dummy p2u.pl and run it in three differnt ways (IPC::Run, qx, IPC::Open3)
-  from rp2u.t, and it works just fine.  So I don't see why it's failing in the main script...
-  unless it's a folder difference.
+I had been hoping to use this project as a learning platform for testing scripts as well 
+  as the libraries underneath, but there appears to be something fundamental that
+  I'm missing.  I have decided to just implement as much as I can in the library
+  module, where I can test individual functions with full coverage, then just rely on
+  my development of the script to make sure it's working right; try to keep it nearly
+  all glue.
