@@ -2,32 +2,15 @@
 
 use 5.012;  # strict, say
 use warnings;
-use Getopt::Long;
-use Pod::Usage;
 
 use FindBin;
 use lib "$FindBin::Bin/lib";
-use NppCfgChk 'findNppDir';
+use NppCfgChk::CLI;
 
 our $VERSION = '0.001'; # auto-populated from NppCfgChk
 
-my %arg = (
-    path => undef,
-);
-
-sub init {
-    GetOptions(
-        "path=s" => \$arg{path},
-    ) or do {
-        pod2usage( sprintf qq(\nunknown command line '%s(%s)'\n) , $0, join(', ', @ARGV));
-    };
-    $arg{path} //= findNppDir()
-}
-
 print "Hello World";
-init();
-print "nppPath = ", $arg{path} // '<undef>';
-#printf "env: %s => %s\n", $_, $ENV{$_} for qw/PATH/;
+NppCfgChk::CLI::run(@ARGV);
 exit;
 
 =pod

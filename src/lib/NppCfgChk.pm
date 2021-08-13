@@ -17,7 +17,8 @@ our %EXPORT_TAGS = (
     all     => [@EXPORT_OK],
 );
 
-sub findNppDir {
+sub findNppDir
+{
     my $npp_path;
     #return $npp_path if defined $npp_path;
 
@@ -41,6 +42,23 @@ sub findNppDir {
     $npp_path = catpath( $v, catdir(splitdir($p)), '' );    # use cat(split) to fix mismatched slashes
 
     return $npp_path;
+}
+
+sub grabLocalPath
+{
+    1;
+}
+sub grabCurrentVersion
+{
+    1;
+}
+sub grabSpecificVersion
+{
+    1;
+}
+sub grabDirectoryVersion
+{
+    1;
 }
 
 1;
