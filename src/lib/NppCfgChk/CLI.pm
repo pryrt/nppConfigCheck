@@ -9,6 +9,7 @@ use Exporter 5.57 'import';
 
 use Getopt::Long qw/GetOptionsFromArray/;
 use Pod::Usage;
+use File::Spec::Functions qw/canonpath catpath splitpath catdir splitdir/;
 use NppCfgChk;
 
 #use FindBin; BEGIN { local $\ ="\n"; print STDERR for $FindBin::Bin, $FindBin::Script; }
@@ -34,15 +35,25 @@ sub _usage
     my ($msg, $ref) = @_;
     local $" = " ";
     #print STDERR "USAGE: '$msg' (@$ref)";
-    print STDERR "caller: (@{[caller()]})\n";
-    print STDERR "caller(0): (@{[caller(0)]})\n";
-    print STDERR "caller(1): (@{[caller(1)]})\n";
+    #print STDERR "caller: (@{[caller()]})\n";
+    #print STDERR "caller(0): (@{[caller(0)]})\n";
+    #print STDERR "caller(1): (@{[caller(1)]})\n";
+    #printf STDERR "PAR ENV{%s}=%s\n", $_, $ENV{$_} for sort grep { /PAR/ } keys %ENV;
     my $script = (caller(1))[1]; #calling-script's filename
-    my $tmp = "\nERROR: $msg\ncommand line: $script @$ref";
-    warn $tmp, "\n";
+    if( exists $ENV{PAR_TEMP} and not -f $script) {
+        my ($v,$p,$f) = splitpath($script);
+        #print STDERR "splitpath(script) -> '$v' | '$p' | '$f'\n";
+        my ($vol,$pth,$tail) = splitpath($ENV{PAR_TEMP});
+        #print STDERR "splitpath(PAR_TEMP) -> '$vol' | '$pth' | '$tail'\n";
+        my $extra = canonpath(catpath($vol, catdir(splitdir($pth),$tail,'inc',splitdir($p)), $f));
+        #print STDERR "joined => '$extra'\n";
+        #printf STDERR "exists? %s\n", -f $extra ? 'yes' : 'no';
+        $script = $extra if -f $extra;
+    }
+    my $tmp = "\nERROR: $msg\n\t$script @$ref\n";
     pod2usage(
         -msg => $tmp,
-        -exitvalue => 'NOEXIT',
+        #-exitvalue => 'NOEXIT',
         -input => $script,      # works in .pl, not in .exe
     );
     undef;  # use a FALSE return value in the caller to trigger pod2usage or similar;
@@ -60,7 +71,7 @@ sub run
         'path=s',
         'version=s',
         'config=s',
-    ) or return _usage('Unknown Option', \@_);
+    ) or return _usage('Command Line Problem', \@_);
 
     # process PATH
     $Configuration{path} //= NppCfgChk::findNppDir();
