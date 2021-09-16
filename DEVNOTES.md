@@ -160,3 +160,77 @@ After deleting all the d# and delme and script-running attempts, I realized that
   probably should have kept something and moved it to xt\ for doing author tests.
   I suppose if I really want to, I could go through the git history on those commits
   and find their source later.
+
+# 2021-Sep-16 : XML replicate missing attribute
+  
+Experiment with a replicate-missing-attribute example
+  
+```
+#!perl
+
+use 5.012; # strict, //
+use warnings;
+
+use XML::LibXML;
+
+sub myindent4 {
+    my ($node) = @_;
+    my $str = $node->toString(1);
+    $str =~ s/(^|\G)(  |\t)/    /gm;
+    return $str;
+}
+
+{
+    # this example searches the source for <Item> nodes
+    #   it then looks for an <Item> node in destination that has the same id or name
+    #   for each matching dst:<Item>, it looks through the attributes of the src node and makes sure that dst has a similar attribute; if not, it adds it
+    # This will make sure that for all of the same Item, it has any new attributes with the default value from the source
+    #
+    # TODO: if there is no matching node in dst, need to copy the src-node to the destination
+    #
+
+    my $src = XML::LibXML->load_xml(string => <<EOSRC);
+<top>
+    <Item name="unique" first="1" extra="2" />
+    <Item id="314159" first="1" extra="2" />
+</top>
+EOSRC
+    my $dst = XML::LibXML->load_xml(string => <<EODST);
+<top>
+    <Item name="unique" first="one" file="dest" />
+    <Item name="differnt" first="last" file="dest" />
+    <Item id="271828" first="one" file="dest" />
+    <Item id="314159" extra=".ext" file="dest" />
+</top>
+EODST
+
+    for my $node ( $src->findnodes('//Item') ) {
+        printf STDERR "source node found: '%s'\n", $node->toString(0);
+        my ($id_attr, $id_val) = $node->hasAttribute('id') ? ('id', $node->getAttribute('id')) : $node->hasAttribute('name') ? ('name', $node->getAttribute('name')) : undef;
+        next unless defined $id_val;
+        printf STDERR "\t%-40.40s => %s\n", 'name', $id_val;
+        for my $dnode ( $dst->findnodes(qq{//Item[\@$id_attr="$id_val"]}) ) {
+            printf STDERR "  destination match: '%s'\n", $node->toString(0);
+            printf STDERR "  compare to source attributes:\n";
+            for my $attr ( $node->attributes ) {
+                $attr =~ s/^\s*(.*?)\s*=\s*(.*)/$1/;
+                next if $attr eq $id_attr;
+                my $val = $node->getAttribute($attr);
+                printf STDERR "    looking for '%s' in destination node (src val='%s')...\n", $attr//'<undef>', $val//'<undef>';
+                if( $dnode->hasAttribute($attr) ) {
+                    printf STDERR "      already has %s=%s\n", $attr, $dnode->getAttribute($attr);
+                } else {
+                    printf STDERR "      add %s='%s' to destination\n", $attr, $val;
+                    $dnode->setAttribute($attr, $val);
+                }
+            }
+        }
+        print "\n"x2;
+    }
+
+    printf STDERR "\n\n__DESTINATION__\n\n";
+    print STDERR myindent4($dst);
+    printf STDERR "\n\n__END__\n\n";
+
+}
+```
