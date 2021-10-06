@@ -54,9 +54,9 @@ jobs:
         run: |
           cpanm --notest --installdeps XML::LibXML
           echo _xmldeps_done_xmldeps_done_
-          cpanm --notest --force XML::LibXML
+          cpanm --notest --force --verbose XML::LibXML
           echo _xml_done_xml_done_FIRST
-          cpanm --notest --force XML::LibXML
+          cpanm --notest --force --verbose XML::LibXML
           echo _xml_done_xml_done_SECOND
           # intial run of Makefile.PL to see missing dependencies
           perl Makefile.PL
@@ -67,7 +67,7 @@ jobs:
           echo _xmldeps_done_xmldeps_done_AGAIN
           cpanm --notest --force XML::LibXML
           echo _xml_done_xml_done_THIRD
-          cpanm --notest --force XML::LibXML
+          cpanm --notest --force --verbose XML::LibXML
           echo _xml_done_xml_done_FOURTH
           cpanm --notest --installdeps .
           # re-run Makefile.PL after dependencies met
