@@ -52,15 +52,23 @@ jobs:
       - name: Run Makefile.PL and get prereqs
         # but there might be some modules needed by configure, which makes chicken/egg problem
         run: |
+          cpanm --notest --installdeps XML::LibXML
+          echo _xmldeps_done_xmldeps_done_
+          cpanm --notest --force XML::LibXML
+          echo _xml_done_xml_done_FIRST
+          cpanm --notest --force XML::LibXML
+          echo _xml_done_xml_done_SECOND
           # intial run of Makefile.PL to see missing dependencies
           perl Makefile.PL
           ${{ ( startsWith(matrix.os, 'windows') && 'Get-ChildItem -Recurse') || 'ls -latrR' }}
           # install those dependencies
           # cpanm --notest PAR::Packer
           cpanm --notest --installdeps XML::LibXML
-          echo _xmldeps_done_xmldeps_done_
+          echo _xmldeps_done_xmldeps_done_AGAIN
           cpanm --notest --force XML::LibXML
-          echo _xml_done_xml_done_
+          echo _xml_done_xml_done_THIRD
+          cpanm --notest --force XML::LibXML
+          echo _xml_done_xml_done_FOURTH
           cpanm --notest --installdeps .
           # re-run Makefile.PL after dependencies met
           perl Makefile.PL
