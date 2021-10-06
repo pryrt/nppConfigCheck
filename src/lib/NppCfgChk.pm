@@ -127,3 +127,11 @@ sub mergeContents
 }
 
 1;
+__END__
+__TODO__
+I think what I want to do next for the src_node loop is if no
+matching destination nodes were found, then I need to add one...
+but I'm not sure where to add it; maybe as a sibling to the last-found
+destination node or something; or maybe I'll have to find the parent
+of the current source node, and then find a matching parent node
+in the destination, and add a child to the matchingParent
