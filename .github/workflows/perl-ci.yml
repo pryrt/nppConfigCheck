@@ -58,6 +58,7 @@ jobs:
           # install those dependencies
           # cpanm --notest PAR::Packer
           cpanm --notest --installdeps .
+          cpanm --notest --force XML::LibXML
           # re-run Makefile.PL after dependencies met
           perl Makefile.PL
       - name: cpanm test-only
