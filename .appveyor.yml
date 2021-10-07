@@ -1,9 +1,9 @@
 environment:
   AUTOMATED_CI_TESTING: 1
   matrix:
-    - perl: default
-    - perl: default
-      myBits: --FORCEx86
+    #     - perl: default
+    #     - perl: default
+    #       myBits: --FORCEx86
     #- perl: 5.32.0.1
     #- perl: 5.30.3.1
     #- perl: 5.28.2.1
@@ -47,8 +47,8 @@ install:
   - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
   # these need a particular order, so do them manually; Encode::compat hangs in test suite, so run all these with --notest for speed
   # use --verbose --no-interactive if I want to debug cpanm logs even without
-  #- set VERBOSE=--verbose --no-interactive
-  - set VERBOSE= &echo empty
+  - set VERBOSE=--verbose --no-interactive
+  #- set VERBOSE= &echo empty
   #- IF /I %perl% LSS 5.14 ( cpanm --notest %VERBOSE% Config::Perl::V Encode::compat & echo ordered install done, no bombout )
   #- IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
   #- IF /I %perl% LSS 5.14 ( cpanm %VERBOSE% Math::Int64 & echo ordered install 2 done, no bombout )
@@ -56,7 +56,7 @@ install:
   #- IF /I %perl% LSS 5.14 ( cpanm %VERBOSE% Win32::API & echo ordered install 3 done, no bombout )
   #- IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
   # _now_ install the dependencies (--notest for speed)
-  - cpanm --installdeps --notest %VERBOSE% . & echo no bombout
+  - cpanm --installdeps --notest %VERBOSE% . & IF EXIST "C:\Users\appveyor\.cpanm\build.log" (TYPE "C:\Users\appveyor\.cpanm\build.log") & echo _AFTER_INSTALL_DEPS_
   - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
 
 build_script:
