@@ -42,18 +42,6 @@ EOSRC
 </top>
 EODST
     my $retval = mergeContents( $src_string, $dst_string, {Item=>'id'});
-    SKIP: {
-        skip 'test only valid for debug structure', 4 unless ref $retval and UNIVERSAL::isa($retval, 'ARRAY');
-        diag "debug => ", explain $retval;
-        my $last = $retval->[-1];
-        my $ok = 1;
-        $ok &&= ok defined $last, 'DEBUG: structure ends with defined array element';
-        $ok &&= ok ref($last), 'DEBUG: final element is reference';
-        $ok &&= ok UNIVERSAL::isa($last, 'HASH'), 'DEBUG: final element is hashref';
-        $ok &&= ok exists $last->{'final_destination'}, 'DEBUG: structure defines final destination';
-        $ok &&= $retval = $last->{'final_destination'};
-        $ok or diag "\t last => ", explain $last;
-    };
     my $ok = 1;
     $ok &&= ok defined $retval, 'mergeContents OUTPUT: must be defined';
     $ok &&= ok !ref($retval), 'mergeContents OUTPUT: must be scalar';
