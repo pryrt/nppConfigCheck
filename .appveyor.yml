@@ -41,15 +41,15 @@ install:
   # update cpanm to make sure it's new enough for installdeps to work
   - cpanm App::cpanminus
   - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
-  # make sure MakeMaker is new enough on (was on v5.10, now on <5.20), but not too new to install; unfortunately, test suite fails, so use --notest
+  # make sure MakeMaker is new enough; unfortunately, test suite may fail, so use --notest
   - perl "-MExtUtils::MakeMaker" -le "print $ExtUtils::MakeMaker::VERSION"
-  - echo "%perl%" LSS "5.20"
-  - IF /I %perl% LSS 5.20 ( perl "-MExtUtils::MakeMaker" -le "print $ExtUtils::MakeMaker::VERSION" & cpanm "--notest" "ExtUtils::MakeMaker" & perl "-MExtUtils::MakeMaker" -le "print $ExtUtils::MakeMaker::VERSION" )
+  - cpanm "--notest" "ExtUtils::MakeMaker"
   - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
+  - perl "-MExtUtils::MakeMaker" -le "print $ExtUtils::MakeMaker::VERSION"
   # these need a particular order, so do them manually; Encode::compat hangs in test suite, so run all these with --notest for speed
   # use --verbose --no-interactive if I want to debug cpanm logs even without
-  - set VERBOSE=--verbose --no-interactive
-  #- set VERBOSE= &echo empty
+  #- set VERBOSE=--verbose --no-interactive
+  - set VERBOSE= &echo empty
   #- IF /I %perl% LSS 5.14 ( cpanm --notest %VERBOSE% Config::Perl::V Encode::compat & echo ordered install done, no bombout )
   #- IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
   #- IF /I %perl% LSS 5.14 ( cpanm %VERBOSE% Math::Int64 & echo ordered install 2 done, no bombout )
