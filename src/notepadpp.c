@@ -2,8 +2,9 @@
 
 int main(int argc, char *argv[], char **envp)
 {
+    int i;
     printf("%s ", "running:");
-    for(int i=0; i<argc; i++)
+    for(i=0; i<argc; i++)
         printf("%s ", argv[i]);
     printf("\n");
     //for(char** env = envp; *env != 0; env++) {
