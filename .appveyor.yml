@@ -49,12 +49,12 @@ install:
   # use --verbose --no-interactive if I want to debug cpanm logs even without
   #- set VERBOSE=--verbose --no-interactive
   - set VERBOSE= &echo empty
-  - IF /I %perl% LSS 5.14 ( cpanm --notest %VERBOSE% Config::Perl::V Encode::compat & echo ordered install done, no bombout )
-  - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
-  - IF /I %perl% LSS 5.14 ( cpanm %VERBOSE% Math::Int64 & echo ordered install 2 done, no bombout )
-  - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
-  - IF /I %perl% LSS 5.14 ( cpanm %VERBOSE% Win32::API & echo ordered install 3 done, no bombout )
-  - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
+  #- IF /I %perl% LSS 5.14 ( cpanm --notest %VERBOSE% Config::Perl::V Encode::compat & echo ordered install done, no bombout )
+  #- IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
+  #- IF /I %perl% LSS 5.14 ( cpanm %VERBOSE% Math::Int64 & echo ordered install 2 done, no bombout )
+  #- IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
+  #- IF /I %perl% LSS 5.14 ( cpanm %VERBOSE% Win32::API & echo ordered install 3 done, no bombout )
+  #- IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )
   # _now_ install the dependencies (--notest for speed)
   - cpanm --installdeps --notest %VERBOSE% . & echo no bombout
   - IF EXIST "C:\Users\appveyor\.cpanm\build.log" ( (TYPE "C:\Users\appveyor\.cpanm\build.log" >> cpanm.build.log ) & (DEL "C:\Users\appveyor\.cpanm\build.log") )

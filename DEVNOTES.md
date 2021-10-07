@@ -146,10 +146,10 @@ functionList\*.xml
 
 # 2021-Aug-13 : giving up on run_script
 
-Even after all my fixes, and thinking I solved everything, as soon as I run the main 
+Even after all my fixes, and thinking I solved everything, as soon as I run the main
   script, it's come back.
 
-I had been hoping to use this project as a learning platform for testing scripts as well 
+I had been hoping to use this project as a learning platform for testing scripts as well
   as the libraries underneath, but there appears to be something fundamental that
   I'm missing.  I have decided to just implement as much as I can in the library
   module, where I can test individual functions with full coverage, then just rely on
@@ -162,9 +162,9 @@ After deleting all the d# and delme and script-running attempts, I realized that
   and find their source later.
 
 # 2021-Sep-16 : XML replicate missing attribute
-  
+
 Experiment with a replicate-missing-attribute example
-  
+
 ```
 #!perl
 
@@ -234,3 +234,10 @@ EODST
 
 }
 ```
+
+# 2021-Oct-7 : temporarily giving up on github-actions
+
+Turned off github actions, because I could not get XML::LibXML to
+install on the github windows-latest environment.
+
+Enabling appveyor with .appveyor.yml to handle ci
