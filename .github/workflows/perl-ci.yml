@@ -9,10 +9,11 @@ name: PERL-CI
 # Controls when the workflow will run
 on:
   # Triggers the workflow on all pushes to branches, and pull request for the main branch
+  # was branches: and branches [main]
   push:
-    branches: 
+    branches: [ none ]
   pull_request:
-    branches: [ main ]
+    branches: [ xmain ]
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
