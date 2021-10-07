@@ -1,6 +1,31 @@
 #!perl
-
 package NppCfgChk;
+
+=pod
+
+=encoding utf8
+
+=head1 NAME
+
+NppCfgChk - The guts of the nppConfigCheck application
+
+=head1 SYNOPSIS
+
+see L<nppConfigCheck.pl>
+
+=head1 DESCRIPTION
+
+The purpose of this module is to facilitate merging new
+Notepad++ GUI settings from a new Notepad++ release into your
+existing/installed Notepad++ instance.  When merging, it will
+look for specific XML elements, and make sure that the destination
+XML has a copy of all the important elements and attributes.
+
+=head1 FUNCTIONS
+
+=over
+
+=cut
 
 use 5.012;  # strict, say, state
 use warnings;
@@ -12,12 +37,21 @@ use Exporter 5.57 'import';
 use Carp;
 use XML::LibXML '1.70';
 
-our $VERSION = '0.001'; # master version number; scripts and other modules inherit this value
+our $VERSION = '0.001dev'; # master version number; scripts and other modules inherit this value
 
 our @EXPORT_OK = qw/findNppDir mergeContents/;
 our %EXPORT_TAGS = (
     all     => [@EXPORT_OK],
 );
+
+=item findNppDir
+
+    my $directory = findNppDir();
+
+Returns the path of the directory where the C<notepad++.exe> executable
+is found.  This helps the L<CLI|NppCfgChk::CLI> to find the application.
+
+=cut
 
 sub findNppDir
 {
@@ -63,6 +97,42 @@ sub grabDirectoryVersion
     1;
 }
 
+sub _myCanonical
+{
+    my ($node) = @_;
+    my $str = $node->toString(1);
+    $str =~ s/(^|\G)(  |\t)/    /gm;
+    return $str;
+}
+
+=item mergeContents
+
+=item mergeContents($source, $destination, $config)
+
+    my $source = ...;           # contents of source file, as string
+    my $destination = ...;      # contents of destination file, as string
+    my $config = {Item=>'id'};  # configuring the
+    my $updated = mergeContents($source, $dst, );
+
+The C<$source> input is the string contents of the source XML file.
+The C<$destination> input is the string contents of the destination XML file.
+The function will search through each node from the source, looking for the
+node types defined as the keys of C<$config> (described below).  If it finds
+such an element, then it will search through the destination looking for a node
+that matches the element type (and optionally attribute value).  If it doesn't
+find the matching element in the destination, it will try to add it to a
+reasonable location in the destination structure; if it finds the element, it
+will check to make sure
+
+The C<$config> anonymous hash defines pairs of element names and attribute names:
+the element names define which XML elements are searched for in the XML; if
+there is an attribute name defined, then matches must also contain that same
+attribute value (this allows matching elements based on id or name attributes,
+or similar); if the attribute is undefined, then it will look for any matching
+element.
+
+=cut
+
 sub mergeContents
 {
     my ($src_contents, $dst_contents, $config) = @_;
@@ -79,7 +149,7 @@ sub mergeContents
     croak "config must have keys" unless keys %$config;
 
     my $src = XML::LibXML->load_xml(string => $src_contents);
-    my $dst = XML::LibXML->load_xml(string => $dst_contents);
+    my $dst = XML::LibXML->load_xml(string => $dst_contents, no_blanks=>1);
 
     #print "src: $_\n" for $src->findnodes('/top/*');
     #print "dst: $_\n" for $dst->findnodes('/top/*');
@@ -93,45 +163,88 @@ sub mergeContents
         my $id_attr = $config->{$key};
         my $id_val = $src_node->hasAttribute($id_attr) ? $src_node->getAttribute($id_attr) : undef;
         my $match_xpath= defined $id_val ? qq{//$key\[\@$id_attr="$id_val"]} : qq{//$key};          # if available, look for the right type of node with id_attr=id_val, else just look for the right type of node
-        my @dnodes;
+        #my @dnodes;
+        my $dnodes;
         for my $dst_node ( $dst->findnodes($match_xpath) )
         {
-            my $struct = {'dst_node' => "$dst_node"};
+            # my $debug_struct = {'dst_node' => _myCanonical($dst_node) };
             for my $attr_obj ( $src_node->attributes )
             {
                 my $attr_name = $attr_obj->nodeName();
                 next if $attr_name eq $id_attr;
                 my $attr_value = $attr_obj->nodeValue();
-                $struct->{looking_for}{$attr_name} = $attr_value;
+                # $debug_struct->{looking_for}{$attr_name} = $attr_value;
                 if( $dst_node->hasAttribute($attr_name) ) {
-                    $struct->{found}{$attr_name} = sprintf "already has %s=%s", $attr_name, $dst_node->getAttribute($attr_name);
+                    # $debug_struct->{found}{$attr_name} = sprintf "already has %s=%s", $attr_name, $dst_node->getAttribute($attr_name);
                 } else {
                     $dst_node->setAttribute($attr_name, $attr_value);
-                    $struct->{added}{$attr_name} = sprintf "adding %s=%s to destination", $attr_name, $dst_node->getAttribute($attr_name);
-                    $struct->{added}{node} = "$dst_node (updated)";
+                    # $debug_struct->{added}{$attr_name} = sprintf "adding %s=%s to destination", $attr_name, $dst_node->getAttribute($attr_name);
+                    # $debug_struct->{updated_node} = "$dst_node (updated)";
                 }
             }
-            push @dnodes, $struct;
+            # push @dnodes, $debug_struct;
+            ++$dnodes;
         }
-        push @$dbg, {
-            '1.node_text        ' => "$src_node",
-            '2.key              ' => $key,
-            '3.id_attr          ' => $id_attr,
-            '4.id_val           ' => $id_val,
-            '5.match_xpath      ' => $match_xpath,
-            '6.dnodes           ' => \@dnodes,
-        };
+        if($dnodes) {
+            # push @$dbg, {
+            #     '1.src_node         ' => _myCanonical($src_node),
+            #     '2.src_key          ' => $key,
+            #     '3.src_id_attr      ' => $id_attr,
+            #     '4.src_id_val       ' => $id_val,
+            #     '5.match_xpath      ' => $match_xpath,
+            #     '6.dnodes           ' => \@dnodes,
+            # };
+        } else {
+            my $src_parent = $src_node->parentNode();
+            my $parent_name = $src_parent->nodeName;
+            my $parent_xpath = qq{//$parent_name};
+            my $dst_parent = ($dst->findnodes($parent_xpath))[0] // croak "parent not found in destination";
+            $dst_parent->appendChild( $src_node->cloneNode(1));
+            # push @$dbg, {
+            #     '1.src_node         ' => _myCanonical($src_node),
+            #     '2.missing          ' => "no dst_node found for src_node",
+            #     '3.src_parent_name  ' => $parent_name,
+            #     '4.parent_xpath     ' => $parent_xpath,
+            #     '5.dst_parent       ' => _myCanonical($dst_parent),
+            # };
+        }
     }
-    push @$dbg, {final_destination => $dst->toString };
-    return $dbg;
+    return my $out_contents = _myCanonical($dst);
+    #push @$dbg, {final_destination => $out_contents };
+    #return $dbg;
 }
 
+=back
+
+=head1 AUTHOR
+
+Peter C. Jones C<E<lt>petercj AT cpan DOT orgE<gt>>
+
+Please report any bugs or feature requests
+thru the repository's interface at L<https://github.com/pryrt/nppConfigCheck/issues>.
+
+=begin html
+
+<!--a href="https://metacpan.org/pod/Win32::Mechanize::NotepadPlusPlus"><img src="https://img.shields.io/cpan/v/Win32-Mechanize-NotepadPlusPlus.svg?colorB=00CC00" alt="" title="metacpan"></a-->
+<!--a href="http://matrix.cpantesters.org/?dist=Win32-Mechanize-NotepadPlusPlus"><img src="http://cpants.cpanauthors.org/dist/Win32-Mechanize-NotepadPlusPlus.png" alt="" title="cpan testers"></a-->
+<a href="https://github.com/pryrt/nppConfigCheck/releases"><img src="https://img.shields.io/github/release/pryrt/nppConfigCheck.svg" alt="" title="github release"></a>
+<a href="https://github.com/pryrt/nppConfigCheck/issues"><img src="https://img.shields.io/github/issues/pryrt/nppConfigCheck.svg" alt="" title="issues"></a>
+<!--a href="https://ci.appveyor.com/project/pryrt/win32-mechanize-notepadplusplus"><img src="https://ci.appveyor.com/api/projects/status/6gv0lnwj1t6yaykp/branch/master?svg=true" alt="" title="test coverage"></a-->
+
+=end html
+
+=head1 COPYRIGHT
+
+Copyright (C) 2021 Peter C. Jones
+
+=head1 LICENSE
+
+This program is free software; you can redistribute it and/or modify it
+under the terms of either: the GNU General Public License as published
+by the Free Software Foundation; or the Artistic License.
+
+See L<http://dev.perl.org/licenses/> for more information.
+
+=cut
+
 1;
-__END__
-__TODO__
-I think what I want to do next for the src_node loop is if no
-matching destination nodes were found, then I need to add one...
-but I'm not sure where to add it; maybe as a sibling to the last-found
-destination node or something; or maybe I'll have to find the parent
-of the current source node, and then find a matching parent node
-in the destination, and add a child to the matchingParent
