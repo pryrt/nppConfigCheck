@@ -111,13 +111,13 @@ use 5.010;
 			'Test::Exception' => 0,
 			'constant' => 0,
 			'Config' => 0,
-			'Path::Tiny' => 0.058,          # 0.018 needed for rootdir and cwd; 0.058 needed for sibling
+			#'Path::Tiny' => 0.058,          # 0.018 needed for rootdir and cwd; 0.058 needed for sibling
 			#'Win32' => 0,
 			#'Win32::API' => 0,
 			#'Win32::GuiTest'    => 1.64,    # version needed for 64-bit ::SendMessage retval
 			'Encode' => 0,
 			'FindBin' => 1.49,              # the version released with perl v5.10
-			'IPC::Run' => 0,
+			#'IPC::Run' => 0,
 		};
 	}
 	if( $ExtUtils::MakeMaker::VERSION >= '6.18' ) {

@@ -1,5 +1,4 @@
 environment:
-  AUTOMATED_CI_TESTING: 1
   matrix:
     - perl: default
     - perl: default
@@ -11,15 +10,18 @@ environment:
     #- perl: 5.24.4.1
     #- perl: 5.22.3.1
     #- perl: 5.20.3.3
-    # 5.18 and older are having trouble on AppVeyor after strawberry changed its servers.
-    - perl: 5.18.4.1
+    # 5.18 and older had trouble on AppVeyor until MakeMaker upgraded to most recent
+    #- perl: 5.18.4.1
     ##failed##- perl: 5.16.3.1  # choco package points to outdated download URL
-    - perl: 5.16.3.20170202
+    #- perl: 5.16.3.20170202
     - perl: 5.14.4.1
+    ################################################
+    # 5.12 and older have trouble on AppVeyor due to http being redirected to https://strawberryperl
+    ################################################
     ##failed##- perl: 5.12.3.0  # choco package points to outdated download URL
     ##failed##- perl: 5.12.3.1  # choco package points to outdated download URL
-    - perl: 5.12.3.20180709    # predates cpanm
-    - perl: 5.10.1.5           # predates cpanm # see if the cpan -i App::cpanminus will overcome that
+    #- perl: 5.12.3.20180709    # predates cpanm
+    #- perl: 5.10.1.5           # predates cpanm # see if the cpan -i App::cpanminus will overcome that
 
 skip_tags: true
 
