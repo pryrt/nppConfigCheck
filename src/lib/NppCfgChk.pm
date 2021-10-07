@@ -1,6 +1,17 @@
 #!perl
 package NppCfgChk;
 
+use 5.012;  # strict, say, state
+use warnings;
+use warnings::register;
+use Exporter 5.57 'import';
+
+use File::Which 'which';
+use File::Spec::Functions qw/catpath splitpath catdir splitdir/;
+use Carp;
+use XML::LibXML '1.70';
+
+
 =pod
 
 =encoding utf8
@@ -27,17 +38,7 @@ XML has a copy of all the important elements and attributes.
 
 =cut
 
-use 5.012;  # strict, say, state
-use warnings;
-use warnings::register;
-use File::Which 'which';
-use File::Spec::Functions qw/catpath splitpath catdir splitdir/;
-
-use Exporter 5.57 'import';
-use Carp;
-use XML::LibXML '1.70';
-
-our $VERSION = '0.001dev'; # master version number; scripts and other modules inherit this value
+our $VERSION = '0.000001'; # master version number; scripts and other modules inherit this value
 
 our @EXPORT_OK = qw/findNppDir mergeContents/;
 our %EXPORT_TAGS = (
@@ -129,7 +130,9 @@ the element names define which XML elements are searched for in the XML; if
 there is an attribute name defined, then matches must also contain that same
 attribute value (this allows matching elements based on id or name attributes,
 or similar); if the attribute is undefined, then it will look for any matching
-element.
+element.  The keys of C<%$config> can have one level of depth, so a key of
+C<GUIConfig/PluginDlg> will only match a C<PluginDlg> element if it's inside
+a C<GUIConfig> element.
 
 =cut
 
@@ -159,9 +162,18 @@ sub mergeContents
     for my $src_node ( $src->findnodes('//*') )
     {
         my $key = $src_node->nodeName();        # gives <elementName ...>
-        next unless exists $config->{$key};     # skip if it's not a configured element
+        unless(exists $config->{$key})          # if the element isn't the key of the config hash,
+        {                                       # ... then try with 'parent/key', because I allow one level of depth specfication
+            my $pname = $src_node->parentNode->nodeName();
+            # print STDERR "trying $pname/$key because $key doesn't exist in config\n";
+            if(exists $config->{"$pname/$key"}) {
+                $key = "$pname/$key";           # update key
+            } else {
+                next;                               # skip if it's not a configured element
+            }
+        }
         my $id_attr = $config->{$key};
-        my $id_val = $src_node->hasAttribute($id_attr) ? $src_node->getAttribute($id_attr) : undef;
+        my $id_val = !defined($id_attr) ? undef : $src_node->hasAttribute($id_attr) ? $src_node->getAttribute($id_attr) : undef;
         my $match_xpath= defined $id_val ? qq{//$key\[\@$id_attr="$id_val"]} : qq{//$key};          # if available, look for the right type of node with id_attr=id_val, else just look for the right type of node
         #my @dnodes;
         my $dnodes;
@@ -213,6 +225,34 @@ sub mergeContents
     #push @$dbg, {final_destination => $out_contents };
     #return $dbg;
 }
+
+=item compareConfigFiles
+
+=item compareConfigFiles()
+
+Goes through the list of configuration files, grabs the contents
+of the source (new version) and destination (installed version)
+files, and
+
+=cut
+
+#sub compareConfigFiles
+#{
+#    my ($srcObj, $dstObj) = @_;
+#    my @todo = (
+#        ['config.xml' => {
+#            'FindHistory' => undef,
+#            'ProjectPanel' => 'id',
+#            'GUIConfig' => 'name',
+#        }],
+#        [],
+#    );
+#    while(my ($xmlfilename, $config) = @{shift @todo} ) {
+#        my $srcString = $srcObj->contents($xmlfile);
+#        my $dstString = $dstObj->contents($xmlfile);
+#        my $outString = mergeContents($srcString, $dstString, $config);
+#    }
+#}
 
 =back
 

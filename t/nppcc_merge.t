@@ -26,7 +26,7 @@ use NppCfgChk qw/mergeContents/;
 }
 
 {
-    # merge in missing attributes
+    # simple merge: a couple of missing attributes and one missing element
     my $src_string =<<EOSRC;
 <top a1="x">
     <Item id="unique" first="1" extra="2" />
@@ -50,6 +50,52 @@ EODST
     $ok &&= like $retval, qr/^(?=.*id="unique").*$/m, 'mergeContents OUTPUT: adds element <Item id="unique">';
     $ok or diag "debug => ", explain $retval;
 
+}
+
+{
+    # more complicated merge: need to distinguish a/Item from b/Item
+    my $src_string =<<EOSRC;
+<top a1="x">
+    <a>
+        <Item id="unique" first="1" extra="2" />
+    </a>
+    <b>
+        <Item id="314159" first="1" extra="2" />
+        <Item id="271828" first="1" extra="2" />
+    </b>
+    <GUIConfig name="DockingManager" leftWidth="200" rightWidth="196" topHeight="200" bottomHeight="209">
+        <PluginDlg pluginName="Notepad++::InternalFunction" id="44085" curr="0" prev="-1" isVisible="no" />
+    </GUIConfig>
+</top>
+EOSRC
+    my $dst_string =<<EODST;
+<top>
+    <b>
+        <Item id="271828" first="one" file="dest" />
+        <Item id="314159" extra=".ext" file="dest" />
+        <Item id="161803" file="dest">PHI</Item>
+    </b>
+    <GUIConfig name="DockingManager" leftWidth="200" rightWidth="196" topHeight="200" bottomHeight="209">
+        <PluginDlg id="44085" />
+    </GUIConfig>
+    <OtherParent>
+        <PluginDlg id="44085" />
+    </OtherParent>
+</top>
+EODST
+    my $retval = mergeContents( $src_string, $dst_string, {
+        a => undef,
+        Item=>'id',
+        'GUIConfig/PluginDlg' => 'id',
+    });
+    my $ok = 1;
+    $ok &&= ok defined $retval, 'mergeContents COMPLICATED: must be defined';
+    $ok &&= ok !ref($retval), 'mergeContents COMPLICATED: must be scalar';
+    $ok &&= like $retval, qr/^(?=.*<a>).*$/m, 'mergeContents COMPLICATED: added missing element <a>';
+    $ok &&= like $retval, qr/^(?=.*id="unique").*$/m, 'mergeContents COMPLICATED: adds element <Item id="unique"> to <a>';
+    $ok &&= like $retval, qr/^(?=.*<PluginDlg)(?=.*InternalFunction)(?=.*id="44085").*$/m, 'mergeContents COMPLICATED: add attributes to GuiConfig/PluginDlg';
+    $ok &&= like $retval, qr/^(?=.*<PluginDlg)(?!.*InternalFunction)(?=.*id="44085").*$/m, 'mergeContents COMPLICATED: dont add attributes to OtherParent/PluginDlg';
+    $ok or diag "debug => ", explain $retval;
 }
 
 ok 1;

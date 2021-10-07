@@ -127,8 +127,7 @@ shortcuts.xml
 contextMenu.xml
     SctintillaContextMenu > Item{id|MenuItemName|PluginCommandItemName}
 config.xml
-    FindHistory > *
-    FileBrowser > File
+    FindHistory > attr:*
     ProjectPanels > ProjectPanel{id}
     GUIConfigs > GUIConfig{name}
     GUIConfigs > GUIConfig{DockingManager} > *
@@ -241,3 +240,13 @@ Turned off github actions, because I could not get XML::LibXML to
 install on the github windows-latest environment.
 
 Enabling appveyor with .appveyor.yml to handle ci
+
+# 2021-Oct-7 : idea for getting contents of file
+
+Create a new module, which will do a wrapper that will call either
+the Archive::Zip or a roll-you-own, so that I can have the same
+interface to get $obj->contents($xmlFileName).  If it's a zipfile,
+just use the existing object method; otherwise, use a lookup table
+to map the xmlFileName to the appropriate location to find that
+file.  That then makes it easy for me to uncomment the
+compareConfigFiles() function once it's ready.
