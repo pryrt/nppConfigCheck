@@ -250,3 +250,13 @@ just use the existing object method; otherwise, use a lookup table
 to map the xmlFileName to the appropriate location to find that
 file.  That then makes it easy for me to uncomment the
 compareConfigFiles() function once it's ready.
+
+TODO: in directory version, map filenames to paths
+TODO: move zip-specific missing-files check to after the if-block,
+    and make it work on either ZIP or the SRC (source archives
+    require all files; destination archives do not) -- so will
+    need a new constructor-parameter to determine whether SRC or
+    DST.
+TODO: populate the rest of the config-file-defaults
+TODO: mergeContents: need to handle values-merging for some of the
+    config elements, not just elements and attributes

@@ -112,8 +112,8 @@ sub fromPath
 
     # TODO: move the missing check from insde the if-zip to outside,
     #   and use $self->exists($member) instead of the zip-specific
-    # make it conditional: if isZip or $isCreatingDestinationObject, then do
-    #   the missing check; need to figure out how to defined $isCreatingDestinationObject
+    # make it conditional: if isZip or $isCreatingSourceObject, then do
+    #   the missing check; need to figure out how to defined $isCreatingSourceObject
 
     return $self;
 }
