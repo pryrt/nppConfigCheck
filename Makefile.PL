@@ -23,6 +23,7 @@ use 5.010;
 		'File::Which'               => 0,
 		'FindBin'                   => 0,
 		'Carp'                      => 0,
+        'Scalar::Util'              => 0,
 		'XML::LibXML'               => '1.70',  # version needed for load_xml() to work as expected
 		#'IPC::Open2'               => 0,
 		#'Win32::GuiTest'           => 1.64,    # version needed for 64-bit ::SendMessage retval

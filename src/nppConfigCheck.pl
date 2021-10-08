@@ -25,17 +25,22 @@ nppConfigCheck - Utility to compare Notepad++ config files to the default config
 
     nppConfigCheck.exe [--path <pathToNotepadPlusPlus>] [--version <versionToCompareTo>] [--config appdata|<pathToNotepadPlusPlusConfigs>]
 
-        --path <pathToNotepadPlusPlus>  Chooses the path for the notepad++ executable.
-                                        If not provided, defaults to checking `c:\Program Files\Notepad++` then `c:\Program Files (x86)\Notepad++`.
+        --path <pathToNotepadPlusPlus>
+            Chooses the path for the notepad++ executable.
+            If not provided, defaults to checking `c:\Program Files\Notepad++` then `c:\Program Files (x86)\Notepad++`.
 
-        --version <versionToCompareTo>  Chooses a version of Notepad++ to compare against.
-                                        If not provided, defaults to the most recently-released version of Notepad++.
+        --version <versionToCompareTo>
+            Chooses a version of Notepad++ to compare against.
+            If not provided, defaults to the most recently-released version of Notepad++.
 
-        --config appdata                        Checks the %AppData%\Notepad++ folder.
-        --config <pathToNotepadPlusPlusConfig   Checks a specific path for config files.
-                                                This is useful for when you have Notepad++ configured to use a Cloud path,
-                                                or using the -settingsDir command-line option.
-                                                If not provided, will use a heuristic to guess the correct location.
+        --config appdata
+            Checks the %AppData%\Notepad++ folder.
+
+        --config <pathToNotepadPlusPlusConfig>
+            Checks a specific path for config files.
+            This is useful for when you have Notepad++ configured to use a Cloud path,
+            or using the -settingsDir command-line option.
+            If not provided, will use a heuristic to guess the correct location.
 
 =head2 EXAMPLES
 

@@ -10,6 +10,7 @@ use File::Which 'which';
 use File::Spec::Functions qw/catpath splitpath catdir splitdir/;
 use Carp;
 use XML::LibXML '1.70';
+use Scalar::Util qw/reftype/;
 
 
 =pod
@@ -148,7 +149,7 @@ sub mergeContents
     croak "need destination data" unless defined $dst_contents;
     croak "need configuration" unless defined $config;
     croak "config must be reference" unless ref($config);
-    croak "config must be hashref" unless UNIVERSAL::isa($config, 'HASH');
+    croak "config must be hashref" unless reftype($config) eq 'HASH';
     croak "config must have keys" unless keys %$config;
 
     my $src = XML::LibXML->load_xml(string => $src_contents);
