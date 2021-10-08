@@ -36,16 +36,19 @@ portable or installed folder.
 
     my $archive = NppCfgChk::Archive->fromPath($path);
     my $withCfg = NppCfgChk::Archive->fromPath($path,$configPath);
+    my $withCfg = NppCfgChk::Archive->fromPath($path,$configPath,$isSource);
 
 Pass C<fromPath()> either a $path to a zipfile or a directory. It will then return an object which will give a consistent interface for accessing, and will set up some mappings so that it can find all the files, even for installations where some config files are in the cloud folder and some are in the main installation folder (or installations that are missing some appdata files, so it falls back to using the installation-directory files).
 
 You can optionally specify a C<$configPath>, which will be used to implement L<nppConfigCheck.pl>'s C<--config ...> command-line option, to look for the config files in a specific location.  (So in this case, the first C<$path> is the directory that contains the C<notepad++.exe> and fallback settings files; the C<$configPath> contains the active config files.)
 
+If C<$isSource> is true, or if a zipfile is specified as the path, the archive is expected to be a fully-popluated archive suitable for being the "source" archive for the merge.
+
 =cut
 
 sub fromPath
 {
-    my ($class, $path, $configPath) = @_;
+    my ($class, $path, $configPath, $isSource) = @_;
     my $self = bless {
         mainPath => $path ,
         configPath => $configPath,
@@ -81,39 +84,45 @@ sub fromPath
     }, $class;
 
     if($path =~ m/\.zip$/i) {
+
+        $isSource = 1;      # zipfiles are always considered a source archive
         $self->{isZip} = 1;
         $self->{zipObj} = Archive::Zip->new($path);
+
+        # map filenames to zipfile location, using .model variant because zipfile is source
         $self->{'config.xml'}{location} = 'config.xml';
         $self->{'langs.xml'}{location} = 'langs.model.xml';
         $self->{'stylers.xml'}{location} = 'stylers.model.xml';
 
-        {   # TODO: move missing check to below
-            # check for missing files and throw an error
-            my @missing;
-            for( grep /\.xml$/, keys %$self ) {
-                push @missing, $_ unless defined $self->{zipObj}->memberNamed($self->{$_}{location});
-            }
-            local $" = ", ";
-            croak "archive is missing files @missing" if @missing;
-        }
-
     } else {
+
         $self->{isZip} = 0;
         $self->{zipObj} = undef;
 
-        # TODO: need to do the {location} mapping for directory-based
-        # something like:
-        #   for qw/config.xml langs.xml .../
-        #       $self->{$_}{location} = (defined($configPath) && -d $configPath) ? "$configPath/$_" : "$path/$_";
-        #       then do a missing check BELOW
+        # map filenames to location
+        for my $cfile (qw/config.xml langs.xml stylers.xml/) {
+            $self->{$cfile}{location} = (defined($configPath) && -d $configPath) ? "$configPath/$cfile" : "$path/$cfile";
+            $self->{$cfile}{location} =~ s{//}{/};  # remove double-slash in case configPath or path ends in /
+        }
 
+        # for source directory, include .model in location
+        if($isSource) {
+            for my $cfile (qw/langs.xml stylers.xml/) {
+                $self->{$cfile}{location} =~ s/\./.model./;
+            }
+        }
 
     }
 
-    # TODO: move the missing check from insde the if-zip to outside,
-    #   and use $self->exists($member) instead of the zip-specific
-    # make it conditional: if isZip or $isCreatingSourceObject, then do
-    #   the missing check; need to figure out how to defined $isCreatingSourceObject
+    # check for missing source files and throw error if any missing
+    if($isSource) {
+        my @missing;
+        for my $memberName ( grep /\.xml$/, keys %$self ) {
+            push @missing, $memberName unless $self->exists($memberName);
+        }
+        local $" = ", ";
+        croak "archive is missing files: @missing" if @missing;
+    }
 
     return $self;
 }
@@ -168,6 +177,18 @@ Slurps the contents of $filename from the archive.
     do {...} if $archive->exists($filename);
 
 Checks if the file is present in the archive.
+
+=cut
+
+sub exists
+{
+    my ($self, $member) = @_;
+    return $self->isZip ?
+        # if it's a zip archive, check if it finds a member with the right name
+        defined( $self->{zipObj}->memberNamed( $self->{$member}{location} ) ) :
+        # if it's not a zip archive, use a normal filesystem check to see if the file exists
+        -f $self->{$member}{location};
+}
 
 =item isZip
 
