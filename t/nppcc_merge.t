@@ -5,7 +5,6 @@ use 5.012;  # strict, say, state
 use warnings;
 use Test::More;
 use Test::Exception;
-use File::Spec::Functions qw/catpath splitpath catfile catdir splitdir updir/;
 
 use FindBin;
 use lib "$FindBin::Bin/../src/lib";
@@ -98,6 +97,31 @@ EODST
     $ok or diag "debug => ", explain $retval;
 }
 
-ok 1;
+TODO: {
+    local $TODO = "not implemented";
+    ok 0, 'need to test the merging of values';
+
+=begin comment
+
+<top>
+    <Language name="here">
+        <Keywords name="instre1">value1 value2</Keywords>
+        <Keywords name="type1">value3</Keywords>
+    </Language>
+</top>
+
+<top>
+    <Language name="here">
+        <Keywords name="instre1">value1</Keywords>
+        <Keywords name="type1">value4</Keywords>
+    </Language>
+</top>
+
+needs to merge value2 into instre1 and value3 into type1; so I need a way to indicate that... or maybe, I just do a test "if required element has a value
+in src, then I need to parse those values, and set any that are missing in dst"...
+
+=cut
+
+}
 
 done_testing;
