@@ -109,9 +109,11 @@ sub fromPath
         $self->{zipObj} = Archive::Zip->new($path);
 
         # map filenames to zipfile location, using .model variant because zipfile is source
-        $self->{'config.xml'}{location} = 'config.xml';
         $self->{'langs.xml'}{location} = 'langs.model.xml';
         $self->{'stylers.xml'}{location} = 'stylers.model.xml';
+        for my $cfile ( qw/config.xml shortcuts.xml contextMenu.xml/ ) {
+            $self->{$cfile}{location} = $cfile;
+        }
 
     } else {
 
@@ -119,7 +121,7 @@ sub fromPath
         $self->{zipObj} = undef;
 
         # map filenames to location
-        for my $cfile (qw/config.xml langs.xml stylers.xml/) {
+        for my $cfile (qw/langs.xml stylers.xml config.xml shortcuts.xml contextMenu.xml/) {
             $self->{$cfile}{location} = (defined($configPath) && -d $configPath) ? "$configPath/$cfile" : "$path/$cfile";
             $self->{$cfile}{location} =~ s{//}{/};  # remove double-slash in case configPath or path ends in /
         }
