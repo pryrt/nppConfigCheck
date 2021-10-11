@@ -80,6 +80,25 @@ sub fromPath
                 'WidgetStyle' => 'name',
             },
         },
+        'shortcuts.xml' => {
+            elements => {
+                'InternalCommands' => undef,
+                'InternalCommands/Shortcut' => undef,
+                'Macros' => undef,
+                'Macros/Macro' => 'name',
+                'Macro/Action' => 'name',
+                'UserDefinedCommands' => undef,
+                'PluginCommands' => undef,
+                'ScintillaKeys' => undef,
+            }
+        },
+        'contextMenu.xml' => {
+            elements => {
+                'ScintillaContextMenu' => undef,
+                'ScintillaContextMenu/Item' => 'id',    #     SctintillaContextMenu > Item{id|MenuItemName|PluginCommandItemName}
+            }
+        },
+
         # TODO: continue populating, but this is enough for development purposes
     }, $class;
 

@@ -268,3 +268,11 @@ completed the mergeContents TODO for values
 since shortcuts.xml has values that shouldn't be split-and-sorted, add in a
     _sorted_ = { Element => boolean } into $config, which will tell which
     elements should have values sorted;
+
+Continue populating the config-file defaults.  While doing that, saw something
+I will have to implement:
+TODO: for contextMenu, there isn't a single unique identifier: you can have
+    multiple instances of any of the entries; I am not sure the best way
+    to handle it.  This might be a future feature to be implemented after
+    initial release.
+TODO: for the `*.xml` entries, need to figure out how to implement that.
