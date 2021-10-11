@@ -265,3 +265,6 @@ DONE: mergeContents: need to handle values-merging for some of the
 $ 2021-Oct-11 merging values
 
 completed the mergeContents TODO for values
+since shortcuts.xml has values that shouldn't be split-and-sorted, add in a
+    _sorted_ = { Element => boolean } into $config, which will tell which
+    elements should have values sorted;

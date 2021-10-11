@@ -97,9 +97,7 @@ EODST
     $ok or diag "debug => ", explain $retval;
 }
 
-TODO: {
-    local $TODO = "need to debug the test and code to make this merge work, so ignore fail(s)";
-
+{
     my $src_string =<<EOSRC;
 <top>
     <Language name="here">
@@ -120,17 +118,33 @@ EODST
     my $retval = mergeContents( $src_string, $dst_string, {
         Language => 'name',
         Keywords => 'name',
+        _sort_ => {
+            Keywords => 1,
+        }
     });
     my ($ok, $allok) = (1,1);
     $ok = like $retval, qr/^(?=.*name="instre1")(?=.*value1)(?=.*value2).*$/m, 'mergeContents VALUES: added value2 to instre1'; $allok &&= $ok;
     $ok = like $retval, qr/^(?=.*name="type1")(?=.*value4)(?=.*value3).*$/m, 'mergeContents VALUES: added value3 to type1'; $allok &&= $ok;
     $ok or diag "debug => ", explain $retval;
 
-=begin comment
+    # again without sorting uniquely on keywords (code coverage)
+    $retval = mergeContents( $src_string, $dst_string, {
+        Language => 'name',
+        Keywords => 'name',
+        _sort_ => {
+            Keywords => 0,
+        }
+    });
+    like $retval, qr/^(?=.*name="instre1")(?=.*value1.*value1).*$/m, 'mergeContents VALUES: duplicate value1 when not sort+unique'
+        or diag "debug => ", explain $retval;
 
-implementation: maybe, just do a test "if required element has a value in src, then I need to parse those values, and set any that are missing in dst"...
-
-=cut
+    # and now without the sort description existing, which also means no sorting
+    $retval = mergeContents( $src_string, $dst_string, {
+        Language => 'name',
+        Keywords => 'name',
+    });
+    like $retval, qr/^(?=.*name="type1")(?=.*value4.*value3).*$/m, 'mergeContents VALUES: unsorted when no _sort_ key'
+        or diag "debug => ", explain $retval;
 
 }
 

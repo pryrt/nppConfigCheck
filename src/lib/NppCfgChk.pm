@@ -230,9 +230,13 @@ sub mergeContents
                 # remove the old text children
                 $dst_node->removeChild($_) for @to_delete;
 
-                # merge them alphabetically, uniquely
-                my %merge = map { $_ => 1 } @source_contents, @dest_contents;
-                @dest_contents = sort { $a cmp $b } keys %merge;
+                # merge them, possibly uniquifying and sorting
+                if(exists $config->{_sort_}{$dst_node->nodeName} and $config->{_sort_}{$dst_node->nodeName}) {
+                    my %merge = map { $_ => 1 } @source_contents, @dest_contents;
+                    @dest_contents = sort { $a cmp $b } keys %merge;
+                } else {
+                    @dest_contents = (@dest_contents, @source_contents);
+                }
                 $dst_node->appendTextNode(join ' ', @dest_contents);
                 #print STDERR "debug: merged to (@dest_contents)\n";
                 #print STDERR "\t", _myCanonical($dst_node), "\n";
