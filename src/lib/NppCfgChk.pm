@@ -135,6 +135,12 @@ element.  The keys of C<%$config> can have one level of depth, so a key of
 C<GUIConfig/PluginDlg> will only match a C<PluginDlg> element if it's inside
 a C<GUIConfig> element.
 
+When merging, if one of the configured elements has a text-only child node,
+the text "words" (space separated groups of nonspace characters) will be merged
+alphabetically into the destination contents.  (This won't work if any of the
+"words" have the C<"quoted spaces"> like might happen in the UDL files; right now,
+UDLs aren't merged, so that's not an issue.)
+
 =cut
 
 sub mergeContents
@@ -162,6 +168,7 @@ sub mergeContents
 
     for my $src_node ( $src->findnodes('//*') )
     {
+        # make sure it's an appropriate node based on config settings
         my $key = $src_node->nodeName();        # gives <elementName ...>
         unless(exists $config->{$key})          # if the element isn't the key of the config hash,
         {                                       # ... then try with 'parent/key', because I allow one level of depth specfication
@@ -173,10 +180,22 @@ sub mergeContents
                 next;                               # skip if it's not a configured element
             }
         }
+
+        # grab the id attribute name and value (as applicable) and determine the XPath for matching nodes in the destination
         my $id_attr = $config->{$key};
         my $id_val = !defined($id_attr) ? undef : $src_node->hasAttribute($id_attr) ? $src_node->getAttribute($id_attr) : undef;
         my $match_xpath= defined $id_val ? qq{//$key\[\@$id_attr="$id_val"]} : qq{//$key};          # if available, look for the right type of node with id_attr=id_val, else just look for the right type of node
-        #my @dnodes;
+
+        # does the source have any values (ie, text-only child nodes)?
+        my @source_contents;
+        for my $src_kid ($src_node->nonBlankChildNodes()) {
+            next unless $src_kid->nodeType == XML_TEXT_NODE;
+            my $text = $src_kid->nodeValue;
+            push @source_contents, split ' ', $text;
+            #print STDERR "debug: child node: node(", $src_kid->nodeType(), ".", $src_kid->nodeName, ") = ", $text, " [", scalar @source_contents, "]", "\n";
+        }
+
+        # look through the destination for nodes that match the source
         my $dnodes;
         for my $dst_node ( $dst->findnodes($match_xpath) )
         {
@@ -197,6 +216,27 @@ sub mergeContents
             }
             # push @dnodes, $debug_struct;
             ++$dnodes;
+
+            if(@source_contents) {
+                my @dest_contents;
+                my @to_delete;
+                for my $dst_kid ($dst_node->nonBlankChildNodes()) {
+                    next unless $dst_kid->nodeType == XML_TEXT_NODE;
+                    my $text = $dst_kid->nodeValue;
+                    push @dest_contents, split ' ', $text;
+                    #print STDERR "debug: child node: node(", $dst_kid->nodeType(), ".", $dst_kid->nodeName, ") = ", $text, " [", scalar @dest_contents, "]", "\n";
+                    push @to_delete, $dst_kid;
+                }
+                # remove the old text children
+                $dst_node->removeChild($_) for @to_delete;
+
+                # merge them alphabetically, uniquely
+                my %merge = map { $_ => 1 } @source_contents, @dest_contents;
+                @dest_contents = sort { $a cmp $b } keys %merge;
+                $dst_node->appendTextNode(join ' ', @dest_contents);
+                #print STDERR "debug: merged to (@dest_contents)\n";
+                #print STDERR "\t", _myCanonical($dst_node), "\n";
+            }
         }
         if($dnodes) {
             # push @$dbg, {
@@ -221,6 +261,7 @@ sub mergeContents
             #     '5.dst_parent       ' => _myCanonical($dst_parent),
             # };
         }
+
     }
     return my $out_contents = _myCanonical($dst);
     #push @$dbg, {final_destination => $out_contents };

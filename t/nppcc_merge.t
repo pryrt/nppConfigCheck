@@ -41,12 +41,12 @@ EOSRC
 </top>
 EODST
     my $retval = mergeContents( $src_string, $dst_string, {Item=>'id'});
-    my $ok = 1;
-    $ok &&= ok defined $retval, 'mergeContents OUTPUT: must be defined';
-    $ok &&= ok !ref($retval), 'mergeContents OUTPUT: must be scalar';
-    $ok &&= like $retval, qr/^(?=.*id="314159")(?=.*first="1").*$/m, 'mergeContents OUTPUT: id=314159 adds attribute first="1"';
-    $ok &&= like $retval, qr/^(?=.*id="271828")(?=.*extra="2").*$/m, 'mergeContents OUTPUT: id=271828 adds attribute extra="2"';
-    $ok &&= like $retval, qr/^(?=.*id="unique").*$/m, 'mergeContents OUTPUT: adds element <Item id="unique">';
+    my ($ok, $allok) = (1,1);
+    $ok = ok defined $retval, 'mergeContents OUTPUT: must be defined'; $allok &&= $ok;
+    $ok = ok !ref($retval), 'mergeContents OUTPUT: must be scalar'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*id="314159")(?=.*first="1").*$/m, 'mergeContents OUTPUT: id=314159 adds attribute first="1"'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*id="271828")(?=.*extra="2").*$/m, 'mergeContents OUTPUT: id=271828 adds attribute extra="2"'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*id="unique").*$/m, 'mergeContents OUTPUT: adds element <Item id="unique">'; $allok &&= $ok;
     $ok or diag "debug => ", explain $retval;
 
 }
@@ -87,38 +87,48 @@ EODST
         Item=>'id',
         'GUIConfig/PluginDlg' => 'id',
     });
-    my $ok = 1;
-    $ok &&= ok defined $retval, 'mergeContents COMPLICATED: must be defined';
-    $ok &&= ok !ref($retval), 'mergeContents COMPLICATED: must be scalar';
-    $ok &&= like $retval, qr/^(?=.*<a>).*$/m, 'mergeContents COMPLICATED: added missing element <a>';
-    $ok &&= like $retval, qr/^(?=.*id="unique").*$/m, 'mergeContents COMPLICATED: adds element <Item id="unique"> to <a>';
-    $ok &&= like $retval, qr/^(?=.*<PluginDlg)(?=.*InternalFunction)(?=.*id="44085").*$/m, 'mergeContents COMPLICATED: add attributes to GuiConfig/PluginDlg';
-    $ok &&= like $retval, qr/^(?=.*<PluginDlg)(?!.*InternalFunction)(?=.*id="44085").*$/m, 'mergeContents COMPLICATED: dont add attributes to OtherParent/PluginDlg';
+    my ($ok, $allok) = (1,1);
+    $ok = ok defined $retval, 'mergeContents COMPLICATED: must be defined'; $allok &&= $ok;
+    $ok = ok !ref($retval), 'mergeContents COMPLICATED: must be scalar'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*<a>).*$/m, 'mergeContents COMPLICATED: added missing element <a>'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*id="unique").*$/m, 'mergeContents COMPLICATED: adds element <Item id="unique"> to <a>'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*<PluginDlg)(?=.*InternalFunction)(?=.*id="44085").*$/m, 'mergeContents COMPLICATED: add attributes to GuiConfig/PluginDlg'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*<PluginDlg)(?!.*InternalFunction)(?=.*id="44085").*$/m, 'mergeContents COMPLICATED: dont add attributes to OtherParent/PluginDlg'; $allok &&= $ok;
     $ok or diag "debug => ", explain $retval;
 }
 
 TODO: {
-    local $TODO = "not implemented";
-    ok 0, 'need to test the merging of values';
+    local $TODO = "need to debug the test and code to make this merge work, so ignore fail(s)";
 
-=begin comment
-
+    my $src_string =<<EOSRC;
 <top>
     <Language name="here">
         <Keywords name="instre1">value1 value2</Keywords>
         <Keywords name="type1">value3</Keywords>
     </Language>
 </top>
+EOSRC
 
+    my $dst_string =<<EODST;
 <top>
     <Language name="here">
         <Keywords name="instre1">value1</Keywords>
         <Keywords name="type1">value4</Keywords>
     </Language>
 </top>
+EODST
+    my $retval = mergeContents( $src_string, $dst_string, {
+        Language => 'name',
+        Keywords => 'name',
+    });
+    my ($ok, $allok) = (1,1);
+    $ok = like $retval, qr/^(?=.*name="instre1")(?=.*value1)(?=.*value2).*$/m, 'mergeContents VALUES: added value2 to instre1'; $allok &&= $ok;
+    $ok = like $retval, qr/^(?=.*name="type1")(?=.*value4)(?=.*value3).*$/m, 'mergeContents VALUES: added value3 to type1'; $allok &&= $ok;
+    $ok or diag "debug => ", explain $retval;
 
-needs to merge value2 into instre1 and value3 into type1; so I need a way to indicate that... or maybe, I just do a test "if required element has a value
-in src, then I need to parse those values, and set any that are missing in dst"...
+=begin comment
+
+implementation: maybe, just do a test "if required element has a value in src, then I need to parse those values, and set any that are missing in dst"...
 
 =cut
 

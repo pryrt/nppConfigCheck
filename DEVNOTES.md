@@ -259,5 +259,9 @@ DONE: move zip-specific missing-files check to after the if-block,
     DST.
 DONE: increase test coverage of the missing-files-check for SRC directory
 TODO: populate the rest of the config-file-defaults
-TODO: mergeContents: need to handle values-merging for some of the
+DONE: mergeContents: need to handle values-merging for some of the
     config elements, not just elements and attributes
+
+$ 2021-Oct-11 merging values
+
+completed the mergeContents TODO for values
